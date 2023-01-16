@@ -1,0 +1,96 @@
+"X.SUBMITTED.ID","H_SAPIENS_ORTHOLOGS","M_MUSCULUS_ORTHOLOGS","cx","logFC","adj.P.Val","symbol_clean","significant","detected"
+"FBgn0001989","Hsap\NDUFB6","Mmus\Ndufb6","Cx1_all",-0.017,0.83,"ND-B17",FALSE,TRUE
+"FBgn0010217","Hsap\KDM6B <newline> Hsap\ATP5F1B <newline> Hsap\JARID2 <newline> Hsap\KDM5B <newline> Hsap\KDM5C <newline> Hsap\KDM6A <newline> Hsap\KDM5A <newline> Hsap\ATP5PB","Mmus\Atp5b <newline> Mmus\Kdm5b <newline> Mmus\Kdm5d <newline> Mmus\Kdm6a <newline> Mmus\Uty <newline> Mmus\Kdm6b <newline> Mmus\Kdm5a <newline> Mmus\Kdm5c <newline> Mmus\Jarid2 <newline> Mmus\Atp5f1","Cx5",0.491,0.095,"ATPsynbeta",FALSE,TRUE
+"FBgn0011211","Hsap\ATP5F1A","Mmus\Atp5a1","Cx5",0.047,0.66,"blw",FALSE,TRUE
+"FBgn0011227","Hsap\UQCR10","Mmus\Uqcr10","Cx3",1.942,0.026,"ox",TRUE,TRUE
+"FBgn0011361","Hsap\NDUFAB1","Mmus\Ndufab1","Cx1_all",0.308,0.144,"ND-ACP",FALSE,TRUE
+"FBgn0011455","Hsap\NDUFB5","Mmus\Ndufb5","Cx1_all",0.382,0.033,"ND-SGDH",TRUE,TRUE
+"FBgn0013674","Hsap\COX1","Mmus\COX1","Cx4",0.105,0.636,"mt:CoI",FALSE,TRUE
+"FBgn0013675","Hsap\COX2 <newline> Hsap\MTCO2P12","Mmus\COX2","Cx4",0.325,0.143,"mt:CoII",FALSE,TRUE
+"FBgn0013676","Hsap\COX3","Mmus\COX3","Cx4",NA,NA,NA,NA,FALSE
+"FBgn0013678","Hsap\CYTB","Mmus\CYTB","Cx3",-0.986,0.001,"mt:Cyt-b",TRUE,TRUE
+"FBgn0013679","Hsap\ND1","Mmus\ND1","Cx1_all",NA,NA,NA,NA,FALSE
+"FBgn0013680","Hsap\ND2 <newline> Hsap\ND5","Mmus\ND2","Cx1_all",NA,NA,NA,NA,FALSE
+"FBgn0013681","Hsap\ND3","Mmus\ND3","Cx1_all",-0.015,0.871,"mt:ND3",FALSE,TRUE
+"FBgn0013683","Hsap\ND4L","Mmus\ND4L","Cx1_all",NA,NA,NA,NA,FALSE
+"FBgn0013684","Hsap\ND5","Mmus\ND5","Cx1_all",1.366,0.038,"mt:ND5",TRUE,TRUE
+"FBgn0013685","Hsap\ND6","Mmus\ND6","Cx1_all",NA,NA,NA,NA,FALSE
+"FBgn0014028","Hsap\SDHB","Mmus\Sdhb","Cx2",0.526,0.059,"SdhB",FALSE,TRUE
+"FBgn0015031","Hsap\COX6C","Mmus\Cox6c","Cx4",0.26,0.124,"cype",FALSE,TRUE
+"FBgn0017566","Hsap\NDUFS1","Mmus\Ndufs1","Cx1_all",0.537,0.028,"ND-75",TRUE,TRUE
+"FBgn0017567","Hsap\MIR7113 <newline> Hsap\NDUFS8","Mmus\Ndufs8","Cx1_all",0.639,0.023,"ND-23",TRUE,TRUE
+"FBgn0019624","Hsap\COX5A","Mmus\Cox5a","Cx4",0.017,0.917,"COX5A",FALSE,TRUE
+"FBgn0019957","Hsap\NDUFA10 <newline> Hsap\DGUOK <newline> Hsap\DCK <newline> Hsap\TK2","Mmus\Ndufa10 <newline> Mmus\Dguok <newline> Mmus\Dck <newline> Mmus\Tk2","Cx1_all",0.216,0.08,"ND-42",FALSE,TRUE
+"FBgn0021906","Hsap\UQCRFS1 <newline> Hsap\UQCRFS1P1","Mmus\Uqcrfs1","Cx3",0.306,0.327,"RFeSP",FALSE,TRUE
+"FBgn0021967","Hsap\NDUFB10","Mmus\Ndufb10","Cx1_all",0.079,0.377,"ND-PDSW",FALSE,TRUE
+"FBgn0025839","Hsap\NDUFA7","Mmus\Ndufa7","Cx1_all",0.001,0.988,"ND-B14.5A",FALSE,TRUE
+"FBgn0027785","Hsap\NDUFB11","Mmus\Ndufb11 <newline> Mmus\1700029P11Rik","Cx1_all",1.807,0.065,"NP15.6",FALSE,TRUE
+"FBgn0029868","Hsap\YJEFN3 <newline> Hsap\NDUFA13","Mmus\Ndufa13","Cx1_all",-0.043,0.587,"ND-B16.6",FALSE,TRUE
+"FBgn0029888","Hsap\NDUFB8","Mmus\Ndufb8","Cx1_all",0.162,0.089,"ND-ASHI",FALSE,TRUE
+"FBgn0029971","Hsap\NDUFB1","-","Cx1_all",NA,NA,NA,NA,FALSE
+"FBgn0030292","Hsap\NDUFV3","Mmus\Ndufv3","Cx1_all",0.584,0.031,"CG11752",TRUE,TRUE
+"FBgn0030605","Hsap\NDUFB7","Mmus\Ndufb7","Cx1_all",1.66,0.018,"ND-B18",TRUE,TRUE
+"FBgn0030718","Hsap\NDUFS7","Mmus\Ndufs7","Cx1_all",0.744,0.027,"ND-20",TRUE,TRUE
+"FBgn0030733","Hsap\UQCRB","Mmus\Uqcrb","Cx3",0.632,0.084,"UQCR-14",FALSE,TRUE
+"FBgn0030853","Hsap\NDUFV2","Mmus\Ndufv2","Cx1_all",0.061,0.428,"ND-24",FALSE,TRUE
+"FBgn0030975","Hsap\SDHB","Mmus\Sdhb","Cx2",NA,NA,NA,NA,FALSE
+"FBgn0031021","Hsap\NDUFS4","Mmus\Ndufs4","Cx1_all",0.634,0.044,"ND-18",TRUE,TRUE
+"FBgn0031066","Hsap\COX6B2 <newline> Hsap\COX6B1 <newline> Hsap\COA6 <newline> Hsap\NLRP5 <newline> Hsap\KRAS","Mmus\Cox6b2 <newline> Mmus\Coa6 <newline> Mmus\Cox6b1","Cx4",0.28,0.023,"vib",TRUE,TRUE
+"FBgn0031066","Hsap\COX6B2 <newline> Hsap\COX6B1 <newline> Hsap\COA6 <newline> Hsap\NLRP5 <newline> Hsap\KRAS","Mmus\Cox6b2 <newline> Mmus\Coa6 <newline> Mmus\Cox6b1","Cx4",1.024,0.094,"COX6B",FALSE,TRUE
+"FBgn0031228","Hsap\NDUFS5","Mmus\Ndufs5","Cx1_all",0.748,0.017,"ND-15",TRUE,TRUE
+"FBgn0031436","Hsap\NDUFA12 <newline> Hsap\NDUFAF2","Mmus\Ndufa12 <newline> Mmus\Ndufaf2","Cx1_all",1.386,0.004,"ND-B17.2",TRUE,TRUE
+"FBgn0031505","Hsap\NDUFC2 <newline> Hsap\NDUFC2-KCTD14","Mmus\Ndufc2","Cx1_all",0.858,0.035,"ND-B14.5B",TRUE,TRUE
+"FBgn0031684","Hsap\NDUFS6","Mmus\Ndufs6 <newline> Mmus\Ndufs6b","Cx1_all",0.166,0.127,"ND-13A",FALSE,TRUE
+"FBgn0031771","Hsap\NDUFV1","Mmus\Ndufv1","Cx1_all",0.077,0.317,"ND-51",FALSE,TRUE
+"FBgn0031830","Hsap\COX5B","Mmus\Cox5b","Cx4",0.459,0.028,"COX5B",TRUE,TRUE
+"FBgn0031831","Hsap\COX5B","Mmus\Cox5b","Cx4",NA,NA,NA,NA,FALSE
+"FBgn0032511","Hsap\NDUFB9","Mmus\Ndufb9","Cx1_all",1.061,0.015,"ND-B22",TRUE,TRUE
+"FBgn0032833","Hsap\COX4I1 <newline> Hsap\COX4I2 <newline> Hsap\APOBEC3D <newline> Hsap\AICDA <newline> Hsap\APOBEC3F <newline> Hsap\APOBEC3B <newline> Hsap\APOBEC3C <newline> Hsap\APOBEC3A <newline> Hsap\APOBEC3G","Mmus\Cox4i1 <newline> Mmus\Cox4i2 <newline> Mmus\Aicda","Cx4",0.47,0.093,"COX4",FALSE,TRUE
+"FBgn0033020","Hsap\COX4I1 <newline> Hsap\COX4I2 <newline> Hsap\APOBEC3D <newline> Hsap\AICDA <newline> Hsap\APOBEC3F <newline> Hsap\APOBEC3B <newline> Hsap\APOBEC3C <newline> Hsap\APOBEC3A <newline> Hsap\APOBEC3G","Mmus\Cox4i1 <newline> Mmus\Cox4i2 <newline> Mmus\Aicda","Cx4",NA,NA,NA,NA,FALSE
+"FBgn0033570","Hsap\NDUFA6","Mmus\Ndufa6","Cx1_all",NA,NA,NA,NA,FALSE
+"FBgn0033961","Hsap\NDUFB4","Mmus\Ndufb4 <newline> Mmus\Ndufb4b <newline> Mmus\Ndufb4c","Cx1_all",0.043,0.651,"ND-B15",FALSE,TRUE
+"FBgn0034007","Hsap\NDUFV1","Mmus\Ndufv1","Cx1_all",NA,NA,NA,NA,FALSE
+"FBgn0034245","Hsap\UQCR11","Mmus\Uqcr11","Cx3",0.227,0.164,"UQCR-6.4",FALSE,TRUE
+"FBgn0034251","Hsap\NDUFV1","Mmus\Ndufv1","Cx1_all",-2.364,0.017,"ND-51L1",TRUE,TRUE
+"FBgn0034576","Hsap\NDUFA11 <newline> Hsap\LIN54","Mmus\Ndufa11","Cx1_all",0.173,0.126,"ND-B14.7",FALSE,TRUE
+"FBgn0034645","Hsap\NDUFB3","Mmus\Ndufb3","Cx1_all",NA,NA,NA,NA,FALSE
+"FBgn0034877","Hsap\COX6A2 <newline> Hsap\COX6A1 <newline> Hsap\COX6A1P2","Mmus\Cox6a2 <newline> Mmus\Cox6a1","Cx4",-0.061,0.704,"levy",FALSE,TRUE
+"FBgn0035046","Hsap\NDUFA8","Mmus\Ndufa8","Cx1_all",0.368,0.117,"ND-19",FALSE,TRUE
+"FBgn0035600","Hsap\CYC1","Mmus\Cyc1","Cx3",0.068,0.524,"Cyt-c1",FALSE,TRUE
+"FBgn0036222","Hsap\SDHA","Mmus\Sdha","Cx2",NA,NA,NA,NA,FALSE
+"FBgn0036568","Hsap\ATP5F1B <newline> Hsap\KDM6B <newline> Hsap\JARID2 <newline> Hsap\KDM5B <newline> Hsap\KDM5C <newline> Hsap\KDM6A <newline> Hsap\KDM5A","Mmus\Atp5b <newline> Mmus\Kdm5b <newline> Mmus\Kdm5d <newline> Mmus\Kdm6a <newline> Mmus\Uty <newline> Mmus\Kdm6b <newline> Mmus\Kdm5a <newline> Mmus\Kdm5c <newline> Mmus\Jarid2","Cx5",NA,NA,NA,NA,FALSE
+"FBgn0036706","Hsap\NDUFV2","Mmus\Ndufv2","Cx1_all",NA,NA,NA,NA,FALSE
+"FBgn0036728","Hsap\UQCRQ","Mmus\Uqcrq","Cx3",-0.069,0.43,"UQCR-Q",FALSE,TRUE
+"FBgn0036830","Hsap\COX6A2 <newline> Hsap\COX6A1 <newline> Hsap\COX6A1P2","Mmus\Cox6a2 <newline> Mmus\Cox6a1","Cx4",NA,NA,NA,NA,FALSE
+"FBgn0037001","Hsap\NDUFA9 <newline> Hsap\HTATIP2 <newline> Hsap\NMRAL1","Mmus\Ndufa9 <newline> Mmus\Nmral1 <newline> Mmus\Htatip2","Cx1_all",0.412,0.054,"ND-39",FALSE,TRUE
+"FBgn0037172","Hsap\NDUFA7","Mmus\Ndufa7","Cx1_all",NA,NA,NA,NA,FALSE
+"FBgn0037579","Hsap\COX7A2L <newline> Hsap\COX7A1 <newline> Hsap\COX7A2 <newline> Hsap\COX7A2P2","Mmus\Cox7a2l <newline> Mmus\Cox7a1 <newline> Mmus\Cox7a2","Cx4",NA,NA,NA,NA,FALSE
+"FBgn0037860","Hsap\SDHC","Mmus\Sdhc","Cx2",NA,NA,NA,NA,FALSE
+"FBgn0037873","Hsap\SDHC <newline> Hsap\LOC642502","Mmus\Sdhc","Cx2",-0.079,0.544,"SdhC",FALSE,TRUE
+"FBgn0038271","Hsap\PMPCB <newline> Hsap\UQCRC1 <newline> Hsap\UQCRC2 <newline> Hsap\PMPCA","Mmus\Pmpcb <newline> Mmus\Uqcrc1 <newline> Mmus\Uqcrc2 <newline> Mmus\Pmpca","Cx3",0.4,0.146,"UQCR-C1",FALSE,TRUE
+"FBgn0039112","Hsap\SDHD","Mmus\Sdhd","Cx2",NA,NA,NA,NA,FALSE
+"FBgn0039331","Hsap\NDUFS2","Mmus\Ndufs2","Cx1_all",NA,NA,NA,NA,FALSE
+"FBgn0039576","Hsap\UQCRB","Mmus\Uqcrb","Cx3",NA,NA,NA,NA,FALSE
+"FBgn0039651","Hsap\CYC1","Mmus\Cyc1","Cx3",NA,NA,NA,NA,FALSE
+"FBgn0039669","Hsap\NDUFS7","Mmus\Ndufs7","Cx1_all",NA,NA,NA,NA,FALSE
+"FBgn0039909","Hsap\NDUFS2","Mmus\Ndufs2","Cx1_all",0.604,0.093,"ND-49",FALSE,TRUE
+"FBgn0040529","Hsap\COX7A1 <newline> Hsap\COX7A2 <newline> Hsap\COX7A2L <newline> Hsap\COX7A2P2","Mmus\Cox7a2 <newline> Mmus\Cox7a1 <newline> Mmus\Cox7a2l","Cx4",-0.261,0.018,"COX7A",TRUE,TRUE
+"FBgn0040705","Hsap\NDUFA2","Mmus\Ndufa2","Cx1_all",NA,NA,NA,NA,FALSE
+"FBgn0040773","Hsap\SNORD138 <newline> Hsap\COX7C","Mmus\Cox7c <newline> Mmus\Gm3386","Cx4",NA,NA,NA,NA,FALSE
+"FBgn0047038","Hsap\NDUFA5","Mmus\Ndufa5","Cx1_all",0.348,0.029,"ND-13B",TRUE,TRUE
+"FBgn0050093","Hsap\COX6A2 <newline> Hsap\COX6A1 <newline> Hsap\COX6A1P2","Mmus\Cox6a2 <newline> Mmus\Cox6a1","Cx4",NA,NA,NA,NA,FALSE
+"FBgn0050354","Hsap\UQCRH <newline> Hsap\UQCRHL","Mmus\Uqcrh","Cx3",NA,NA,NA,NA,FALSE
+"FBgn0051644","Hsap\COX6C","-","Cx4",NA,NA,NA,NA,FALSE
+"FBgn0052230","Hsap\NDUFA4 <newline> Hsap\NDUFA4L2 <newline> Hsap\C15orf48","Mmus\Ndufa4 <newline> Mmus\Ndufa4l2 <newline> Mmus\AA467197","Cx4",0.551,0.047,"ND-MLRQ",TRUE,TRUE
+"FBgn0058002","Hsap\NDUFB2","Mmus\Ndufb2","Cx1_all",0.083,0.226,"ND-AGGG",FALSE,TRUE
+"FBgn0085201","Hsap\COX7A2L <newline> Hsap\COX7A1 <newline> Hsap\COX7A2 <newline> Hsap\COX7A2P2","Mmus\Cox7a2l <newline> Mmus\Cox7a1 <newline> Mmus\Cox7a2","Cx4",1.143,0.046,"CG34172",TRUE,TRUE
+"FBgn0085468","Hsap\NDUFA1","Mmus\Ndufa1","Cx1_all",-0.031,0.781,"ND-MWFE",FALSE,TRUE
+"FBgn0085736","Hsap\NDUFB2","Mmus\Ndufb2","Cx1_all",NA,NA,NA,NA,FALSE
+"FBgn0250814","Hsap\PMPCA <newline> Hsap\UQCRC1 <newline> Hsap\PMPCB <newline> Hsap\UQCRC2","Mmus\Uqcrc1 <newline> Mmus\Pmpcb <newline> Mmus\Uqcrc2 <newline> Mmus\Pmpca","Cx3",0.344,0.131,"UQCR-C2",FALSE,TRUE
+"FBgn0260008","Hsap\UQCRH <newline> Hsap\UQCRHL","Mmus\Uqcrh","Cx3",-0.08,0.34,"UQCR-11",FALSE,TRUE
+"FBgn0261439","Hsap\SDHA","Mmus\Sdha","Cx2",-0.013,0.899,"SdhA",FALSE,TRUE
+"FBgn0262842","Hsap\UQCR11","Mmus\Uqcr11","Cx3",NA,NA,NA,NA,FALSE
+"FBgn0262952","Hsap\ND4","Mmus\ND4","Cx1_all",NA,NA,NA,NA,FALSE
+"FBgn0263911","Hsap\COX8A <newline> Hsap\COX8C","Mmus\Cox8a <newline> Mmus\Cox8c <newline> Mmus\Cox8b","Cx4",NA,NA,NA,NA,FALSE
+"FBgn0265342","Hsap\COX7C","Mmus\Cox7c","Cx4",NA,NA,NA,NA,FALSE
+"FBgn0266582","Hsap\NDUFS3 <newline> Hsap\PTPMT1","Mmus\Ndufs3","Cx1_all",0.275,0.075,"ND-30",FALSE,TRUE

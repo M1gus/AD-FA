@@ -1,0 +1,14 @@
+#term ID	term description	observed gene count	background gene count	strength	false discovery rate	matching proteins in your network (IDs)	matching proteins in your network (labels)
+PF03722	Hemocyanin, all-alpha domain	4	10	1.77	0.00017	7227.FBpp0072365,7227.FBpp0073484,7227.FBpp0075491,7227.FBpp0088363	Lsp1gamma,Lsp1alpha,Fbp1,Lsp2
+PF03723	Hemocyanin, ig-like domain	4	10	1.77	0.00017	7227.FBpp0072365,7227.FBpp0073484,7227.FBpp0075491,7227.FBpp0088363	Lsp1gamma,Lsp1alpha,Fbp1,Lsp2
+PF01576	Myosin tail	3	5	1.95	0.00050	7227.FBpp0072306,7227.FBpp0076320,7227.FBpp0080452	zip,Prm,Mhc
+PF00372	Hemocyanin, copper containing domain	3	8	1.74	0.0011	7227.FBpp0072365,7227.FBpp0073484,7227.FBpp0088363	Lsp1gamma,Lsp1alpha,Lsp2
+PF00177	Ribosomal protein S7p/S5e	2	3	1.99	0.0050	7227.FBpp0074180,7227.FBpp0082465	RpS5a,RpS5b
+PF00261	Tropomyosin	2	2	2.17	0.0050	7227.FBpp0082535,7227.FBpp0088904	Tm2,Tm1
+PF00992	Troponin	2	2	2.17	0.0050	7227.FBpp0073682,7227.FBpp0074298	up,wupA
+PF02736	Myosin N-terminal SH3-like domain	2	3	1.99	0.0050	7227.FBpp0072306,7227.FBpp0080452	zip,Mhc
+PF03964	Chorion family 2	2	3	1.99	0.0050	7227.FBpp0076298,7227.FBpp0076299	Cp18,Cp15
+PF05387	Chorion family 3	2	2	2.17	0.0050	7227.FBpp0071150,7227.FBpp0289676	Cp36,Cp38
+PF12718	Tropomyosin like	2	2	2.17	0.0050	7227.FBpp0082535,7227.FBpp0088904	Tm2,Tm1
+PF07240	Stress-inducible humoral factor Turandot	2	8	1.57	0.0151	7227.FBpp0083378,7227.FBpp0083379	TotA,TotC
+PF00063	Myosin head (motor domain)	2	16	1.27	0.0458	7227.FBpp0072306,7227.FBpp0080452	zip,Mhc

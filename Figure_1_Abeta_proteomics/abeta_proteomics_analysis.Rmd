@@ -1,0 +1,298 @@
+---
+title: "Proteomics analysis of Abeta-expressing flies"
+author: "Yizhou Yu"
+date: "updated: <i>`r format( Sys.Date(), '%b-%d-%Y')`</i></h4>"
+output:
+  pdf_document: default
+  word_document: default
+  html_document:
+    df_print: paged
+    keep_md: yes
+---
+
+
+# Data curation
+```{r}
+library(tidyverse)
+library(boot)
+library(ggplot2)
+library(pdp)
+library("FactoMineR")
+library("factoextra")
+library(plyr)
+```
+
+Load data <br>
+Note: the protein quantification values have been log2 transformed
+```{r}
+dt = read.csv("data/P239 Ivana Celardo TMT experiment3.csv")
+dt <- subset(dt, select = -c(X))
+dt$gene_name = sub("\\ OS=.*", "", dt$Description)
+#delete all before GN
+dt$symbol = gsub(".*GN=","",dt$Description)
+#delete all before PE
+dt$symbol = gsub(" PE=.*","",dt$symbol)
+head(dt$symbol)
+```
+
+## Descriptive statistics of the number of detected genes
+```{r}
+print(paste0("Total detected: ",nrow(dt)))
+print(paste0("Significant: ",nrow(subset(dt, adj.P.Val <= 0.05))))
+print(paste0("Significantly up: ",nrow(subset(dt, adj.P.Val <= 0.05 & logFC > 0))))
+print(paste0("Significantly down: ",nrow(subset(dt, adj.P.Val <= 0.05 & logFC < 0))))
+```
+
+Add FC up vs down
+```{r}
+#colnames(dt)
+
+#no change
+dt$cutoff1 = "no_change"
+
+#Increased
+dt$cutoff1[dt$logFC >= 1] <- "up"
+
+#Decreased
+dt$cutoff1[dt$logFC <= -1] <- "down"
+
+c1_up = subset(dt, cutoff1 =="up")
+nrow(c1_up)
+c1_down = subset(dt, cutoff1 =="down")
+nrow(c1_down)
+```
+```{r}
+write.csv(c1_up,"data_out/cutoff1_up.csv")
+write.csv(c1_down,"data_out/cutoff1_down.csv")
+write.csv(dt,"data_out/annotated_dt.csv")
+```
+
+Add another FC up vs down <br>
+`log(1.5,2) = 0.5849625` 
+```{r}
+#colnames(dt)
+
+#no change
+dt$cutoff.6 = "no_change"
+
+#Increased
+dt$cutoff.6[dt$logFC >= 0.5849625] <- "up"
+
+#Decreased
+dt$cutoff.6[dt$logFC <= -0.5849625] <- "down"
+
+c.6_up = subset(dt, cutoff.6 =="up")
+nrow(c.6_up)
+c.6_down = subset(dt, cutoff.6 =="down")
+nrow(c.6_down)
+```
+
+Add another FC up vs down <br>
+Add cutoff of 0
+```{r}
+#colnames(dt)
+
+#no change
+dt$cutoff0 = "no_change"
+
+#Increased
+dt$cutoff0[dt$logFC >0] <- "up"
+
+#Decreased
+dt$cutoff0[dt$logFC <0] <- "down"
+
+nrow(subset(dt, cutoff0 =="up"))
+
+nrow(subset(dt, cutoff0 =="down"))
+```
+
+# PCA analysis
+
+## Prepare data for PCA
+
+Only select significant variables
+```{r}
+pca_dt = subset(dt,adj.P.Val <= 0.05, select = c(symbol, daGAL4_plus1,daGAL4_plus2,daGAL4_plus3,daGAL4_plus4,daGAL4_plus5,    daGAL4_Ab_ARC1,daGAL4_Ab_ARC2,daGAL4_Ab_ARC3,daGAL4_Ab_ARC4,daGAL4_Ab_ARC5))
+
+pca_dt_dedup = unique(pca_dt)
+pca_dt_dedup_t = as.data.frame(t(pca_dt_dedup))
+#here, the variables are made into characters...
+
+colnames(pca_dt_dedup_t) <- pca_dt_dedup_t[1,]
+pca_dt_dedup_t = pca_dt_dedup_t[-1,]
+
+#de duplicate
+pca_dt_dedup_t <- pca_dt_dedup_t[, !duplicated(colnames(pca_dt_dedup_t))]
+
+#fix the structure here
+pca_dt_dedup_t <- mutate_all(pca_dt_dedup_t, function(x) as.numeric(as.character(x)))
+
+labels = row.names(pca_dt_dedup_t)
+pca_dt_dedup_t$genotype = row.names(pca_dt_dedup_t)
+#delete last character
+pca_dt_dedup_t$genotype = substr(pca_dt_dedup_t$genotype,1,nchar(pca_dt_dedup_t$genotype)-1)
+
+ncol(pca_dt_dedup_t)
+#colnames(pca_dt_dedup_t) <- make.names(colnames(pca_dt_dedup_t))
+```
+1607 columns, the last one are the groups
+
+## Run PCA
+
+### Visualise
+
+
+```{r}
+pca.10 <- PCA(pca_dt_dedup_t[,1:1606], scale.unit = TRUE, ncp = 10, graph = FALSE)
+fviz_eig(pca.10, addlabels = TRUE) + theme_classic()+ geom_bar(stat = "identity",fill="#939598")+
+  theme(
+    panel.background = element_rect(fill = "transparent"), # bg of the panel
+    plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
+    panel.grid.major = element_blank(), # get rid of major grid
+    panel.grid.minor = element_blank(), # get rid of minor grid
+    legend.background = element_rect(fill = "transparent"), # get rid of legend bg
+    legend.box.background = element_rect(fill = "transparent") # get rid of legend panel bg
+  )
+ggsave("fig/PCA_varianceExplained_10PC.pdf", width = 6, height = 4,  bg = "transparent")
+```
+
+PC1 and 2 together explain 59% of the variance; adding PC3 increases this to 67.5%
+
+```{r}
+fviz_pca_ind(pca.10,
+             geom.ind = "point", # show points only (nbut not "text")
+             col.ind = pca_dt_dedup_t$genotype, # color by groups
+             palette = c("#ED2024","#939598"),
+             addEllipses = TRUE, # Concentration ellipses
+             legend.title = "Genotypes"
+             ) + theme_classic()+
+  theme(
+    panel.background = element_rect(fill = "transparent"), # bg of the panel
+    plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
+    panel.grid.major = element_blank(), # get rid of major grid
+    panel.grid.minor = element_blank(), # get rid of minor grid
+    legend.background = element_rect(fill = "transparent"), # get rid of legend bg
+    legend.box.background = element_rect(fill = "transparent") # get rid of legend panel bg
+  )
+ggsave("fig/PCA_general_graph.pdf", width = 6, height = 4,  bg = "transparent")
+```
+The red dashed line on the graph above indicates the expected average contribution.
+
+```{r}
+pca_vars = get_pca_var(pca.10)
+fviz_contrib(pca.10, choice = "var", axes = 1, top = 100) + theme_classic()
+```
+
+Get genes that are the highest contributors
+```{r}
+pca_contrib = as.data.frame(pca_vars$contrib)
+pca_contrib$names = row.names(pca_contrib)
+pca_contrib_sorted <- arrange(pca_contrib,desc(Dim.1))
+head(pca_contrib_sorted,10)
+```
+
+Get genes that are higher than the average contributor
+```{r}
+mean(pca_contrib$Dim.1)
+```
+
+Determined using mean(pca_contrib$Dim.1) -> 0.0622665
+```{r}
+pca_contrib_high = subset(pca_contrib, Dim.1 >= 0.0622665)
+pca_contrib_high_names = subset(pca_contrib_high, select = c(names))
+dt_simplified = subset(dt, select = c(symbol,logFC, cutoff.6))
+pca_contrib_high_names = merge(pca_contrib_high_names, dt_simplified,
+                               by.x = "names", by.y = "symbol")
+nrow(pca_contrib_high_names)
+pca_contrib_high_names_list = unique(subset(pca_contrib_high_names, select = c(names, cutoff.6)))
+pca_contrib_high_names_list_higher_cutoff = subset(pca_contrib_high_names_list, select = names, cutoff.6 == "up")
+
+write.csv(pca_contrib_high_names, "data_out/pca_high_contribution.csv", row.names = F)
+write.csv(pca_contrib_high_names_list, "data_out/pca_high_contribution_geneNamesOnly.csv", row.names = F)
+write.csv(pca_contrib_high_names_list_higher_cutoff, "data_out/pca_contrib_high_names_list_higher_0.6cutoff.csv", row.names = F)
+```
+
+
+## String plot of the STRING results
+
+```{r}
+string_dt = read.csv("data_out/PCA_STRING/enrichment.Keyword_PCR_STRING_up_FC1.5.tsv", sep = "\t")
+go_target = c("Ubiquinone","NAD","Respiratory chain","One-carbon metabolism")
+string_dt_splot = string_dt[string_dt$term.description %in% go_target, ]
+string_dt_splot$cat = ifelse(string_dt_splot$term.description == "One-carbon metabolism", yes = "One-carbon metabolism",no = "Mitochondria")
+string_dt_splot_subset = subset(string_dt_splot, select = c(term.description, cat,                                          matching.proteins.in.your.network..labels.))
+```
+
+remake the df
+```{r}
+# U10 
+
+string_dt_splot_subset_u10_proteins = string_dt_splot_subset[string_dt_splot_subset$term.description=="Ubiquinone",]$matching.proteins.in.your.network..labels.
+string_dt_splot_subset_u10_proteins = as.list(strsplit(string_dt_splot_subset_u10_proteins, ","))
+
+
+string_dt_splot_subset_u10 = data.frame(from = rep("Ubiquinone",length(string_dt_splot_subset_u10_proteins)),
+                                        to = string_dt_splot_subset_u10_proteins)
+colnames(string_dt_splot_subset_u10)<-c("from","to")
+
+
+# NAD
+string_dt_splot_subset_proteins_nad =  as.list(strsplit(string_dt_splot_subset[string_dt_splot_subset$term.description=="NAD",]$matching.proteins.in.your.network..labels., ","))
+
+
+string_dt_splot_subset_nad = data.frame(from = rep("NAD",length(string_dt_splot_subset_proteins_nad)),
+                                        to = string_dt_splot_subset_proteins_nad)
+colnames(string_dt_splot_subset_nad)<-c("from","to")
+
+# resp
+string_dt_splot_subset_proteins_resp =  as.list(strsplit(string_dt_splot_subset[string_dt_splot_subset$term.description=="Respiratory chain",]$matching.proteins.in.your.network..labels., ","))
+
+
+string_dt_splot_subset_resp = data.frame(from = rep("Respiratory chain",length(string_dt_splot_subset_proteins_resp)),
+                                        to = string_dt_splot_subset_proteins_resp)
+colnames(string_dt_splot_subset_resp)<-c("from","to")
+
+# 1c
+string_dt_splot_subset_proteins_1c =  as.list(strsplit(string_dt_splot_subset[string_dt_splot_subset$term.description=="One-carbon metabolism",]$matching.proteins.in.your.network..labels., ","))
+
+
+string_dt_splot_subset_1c = data.frame(from = rep("One-carbon metabolism",length(string_dt_splot_subset_proteins_1c)),
+                                        to = string_dt_splot_subset_proteins_1c)
+colnames(string_dt_splot_subset_1c)<-c("from","to")
+
+```
+
+```{r}
+string_dt_splot_bind = rbind(string_dt_splot_subset_u10,
+                             string_dt_splot_subset_nad)
+string_dt_splot_bind = rbind(string_dt_splot_bind,
+                             string_dt_splot_subset_resp)
+string_dt_splot_bind = rbind(string_dt_splot_bind,
+                             string_dt_splot_subset_1c)
+```
+
+Thickness based on strength
+```{r}
+string_dt_splot_bind = merge(string_dt_splot_bind,
+                             subset(string_dt, select = 
+                                      c(term.description,strength)),
+                             by.x = "from",
+                             by.y = "term.description")
+string_dt_splot_bind$colour = ifelse(string_dt_splot_bind$from == "One-carbon metabolism", yes = "One-carbon metabolism",no = "Mitochondria")
+```
+
+Note: since the plot is turned -90 degrees, the labels' order need to be reversed. 
+
+```{r}
+library(circlize)
+
+gene_list = sort(labels(summary(as.factor(string_dt_splot_bind$to))))
+
+pdf("fig/proteomics_STRING_PCA_FC1.5_chordDiag.pdf")
+circos.par(start.degree = -90)
+chordDiagram(string_dt_splot_bind, annotationTrack = c("name", "grid"), scale = TRUE, big.gap = 20, order = c("One-carbon metabolism","NAD","Ubiquinone","Respiratory chain", gene_list))
+circos.clear()
+
+```
+
+

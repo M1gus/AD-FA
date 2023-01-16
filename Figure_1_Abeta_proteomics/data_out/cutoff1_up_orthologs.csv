@@ -1,0 +1,166 @@
+Fly GeneID,Fly Gene ID,FlyBaseID,Fly Symbol, Species,Human GeneID,HGNCID,Human Symbol,DIOPT Score,Weighted Score,Rank,Best Score,Best Score Reverse,Prediction Derived From
+Mhc,35007,FBgn0264695,Mhc,Human,4625,7577,MYH7,12,11.86,high,Yes,Yes,"eggNOG, Hieranoid, Homologene, Inparanoid, OMA, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, RoundUp, TreeFam"
+Mhc,35007,FBgn0264695,Mhc,Human,4625,7577,MYH7,12,11.86,high,Yes,Yes,"eggNOG, Hieranoid, Homologene, Inparanoid, OMA, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, RoundUp, TreeFam"
+Mhc,35007,FBgn0264695,Mhc,Human,4625,7577,MYH7,12,11.86,high,Yes,Yes,"eggNOG, Hieranoid, Homologene, Inparanoid, OMA, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, RoundUp, TreeFam"
+zip,38001,FBgn0265434,zip,Human,4628,7568,MYH10,13,12.81,high,Yes,Yes,"eggNOG, Hieranoid, Homologene, Inparanoid, Isobase, OMA, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, RoundUp, TreeFam"
+Argk,39041,FBgn0000116,Argk,Human,1158,1994,CKM,11,10.73,high,Yes,Yes,"Compara, eggNOG, Hieranoid, Inparanoid, Isobase, OrthoDB, OrthoFinder, OrthoInspector, orthoMCL, RoundUp, TreeFam"
+Argk,39041,FBgn0000116,Argk,Human,1158,1994,CKM,11,10.73,high,Yes,Yes,"Compara, eggNOG, Hieranoid, Inparanoid, Isobase, OrthoDB, OrthoFinder, OrthoInspector, orthoMCL, RoundUp, TreeFam"
+Prm,39002,FBgn0003149,Prm,Human,4622,7574,MYH4,3,2.71,moderate,Yes,No,"eggNOG, orthoMCL, Phylome"
+Prm,39002,FBgn0003149,Prm,Human,4625,7577,MYH7,3,2.71,moderate,Yes,No,"eggNOG, orthoMCL, Phylome"
+Prm,39002,FBgn0003149,Prm,Human,4619,7567,MYH1,3,2.71,moderate,Yes,No,"eggNOG, orthoMCL, Phylome"
+Prm,39002,FBgn0003149,Prm,Human,57644,15906,MYH7B,3,2.71,moderate,Yes,No,"eggNOG, orthoMCL, Phylome"
+Prm,39002,FBgn0003149,Prm,Human,4626,7578,MYH8,3,2.71,moderate,Yes,No,"eggNOG, orthoMCL, Phylome"
+Prm,39002,FBgn0003149,Prm,Human,4621,7573,MYH3,3,2.71,moderate,Yes,No,"eggNOG, orthoMCL, Phylome"
+Prm,39002,FBgn0003149,Prm,Human,22989,31073,MYH15,3,2.71,moderate,Yes,No,"eggNOG, orthoMCL, Phylome"
+Prm,39002,FBgn0003149,Prm,Human,4624,7576,MYH6,3,2.71,moderate,Yes,No,"eggNOG, orthoMCL, Phylome"
+Prm,39002,FBgn0003149,Prm,Human,4620,7572,MYH2,3,2.71,moderate,Yes,No,"eggNOG, orthoMCL, Phylome"
+Act57B,37368,FBgn0000044,Act57B,Human,60,132,ACTB,7,6.77,moderate,Yes,No,"eggNOG, Hieranoid, Homologene, OrthoDB, OrthoFinder, orthoMCL, TreeFam"
+Tm2,41853,FBgn0004117,Tm2,Human,7170,12012,TPM3,11,10.77,high,Yes,Yes,"Compara, eggNOG, Hieranoid, Isobase, OMA, OrthoDB, OrthoFinder, OrthoInspector, Panther, Phylome, TreeFam"
+Tm2,41853,FBgn0004117,Tm2,Human,7168,12010,TPM1,11,10.72,moderate,Yes,No,"Compara, eggNOG, Hieranoid, OMA, OrthoDB, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, TreeFam"
+Tm2,41853,FBgn0004117,Tm2,Human,7169,12011,TPM2,11,10.72,high,Yes,Yes,"Compara, eggNOG, Hieranoid, OMA, OrthoDB, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, TreeFam"
+Tm2,41853,FBgn0004117,Tm2,Human,7171,12013,TPM4,11,10.72,high,Yes,Yes,"Compara, eggNOG, Hieranoid, OMA, OrthoDB, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, TreeFam"
+Ahcy,32471,FBgn0014455,Ahcy,Human,191,343,AHCY,15,14.75,high,Yes,Yes,"Compara, eggNOG, Hieranoid, Homologene, Inparanoid, Isobase, OMA, OrthoDB, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, RoundUp, TreeFam"
+Lsd-2,32437,FBgn0030608,Lsd-2,Human,123,248,PLIN2,10,9.83,high,Yes,Yes,"Compara, eggNOG, Inparanoid, OrthoDB, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, RoundUp"
+Tm1,41852,FBgn0003721,Tm1,Human,7168,12010,TPM1,13,12.79,high,Yes,Yes,"Compara, eggNOG, Hieranoid, Homologene, Inparanoid, OrthoDB, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, RoundUp, TreeFam"
+Lsp2,45326,FBgn0002565,Lsp2,,,,,0,0,None,,,
+Tm1,41852,FBgn0003721,Tm1,Human,7168,12010,TPM1,13,12.79,high,Yes,Yes,"Compara, eggNOG, Hieranoid, Homologene, Inparanoid, OrthoDB, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, RoundUp, TreeFam"
+up,32314,FBgn0004169,up,Human,7139,11949,TNNT2,10,9.7,high,Yes,Yes,"Compara, eggNOG, Hieranoid, Inparanoid, Isobase, OrthoInspector, orthoMCL, Panther, Phylome, TreeFam"
+Cyt-c-p,34996,FBgn0284248,Cyt-c-p,Human,54205,19986,CYCS,13,12.87,high,Yes,Yes,"eggNOG, Hieranoid, Homologene, Inparanoid, OMA, OrthoDB, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, RoundUp, TreeFam"
+Prm,39002,FBgn0003149,Prm,Human,4622,7574,MYH4,3,2.71,moderate,Yes,No,"eggNOG, orthoMCL, Phylome"
+Prm,39002,FBgn0003149,Prm,Human,4625,7577,MYH7,3,2.71,moderate,Yes,No,"eggNOG, orthoMCL, Phylome"
+Prm,39002,FBgn0003149,Prm,Human,4619,7567,MYH1,3,2.71,moderate,Yes,No,"eggNOG, orthoMCL, Phylome"
+Prm,39002,FBgn0003149,Prm,Human,57644,15906,MYH7B,3,2.71,moderate,Yes,No,"eggNOG, orthoMCL, Phylome"
+Prm,39002,FBgn0003149,Prm,Human,4626,7578,MYH8,3,2.71,moderate,Yes,No,"eggNOG, orthoMCL, Phylome"
+Prm,39002,FBgn0003149,Prm,Human,4621,7573,MYH3,3,2.71,moderate,Yes,No,"eggNOG, orthoMCL, Phylome"
+Prm,39002,FBgn0003149,Prm,Human,22989,31073,MYH15,3,2.71,moderate,Yes,No,"eggNOG, orthoMCL, Phylome"
+Prm,39002,FBgn0003149,Prm,Human,4624,7576,MYH6,3,2.71,moderate,Yes,No,"eggNOG, orthoMCL, Phylome"
+Prm,39002,FBgn0003149,Prm,Human,4620,7572,MYH2,3,2.71,moderate,Yes,No,"eggNOG, orthoMCL, Phylome"
+smp-30,41786,FBgn0038257,smp-30,Human,9104,9989,RGN,15,14.75,high,Yes,Yes,"Compara, eggNOG, Hieranoid, Homologene, Inparanoid, Isobase, OMA, OrthoDB, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, RoundUp, TreeFam"
+CG2233,31721,FBgn0029990,CG2233,,,,,0,0,None,,,
+LManIII,34203,FBgn0032066,LManIII,Human,4125,6826,MAN2B1,10,9.75,moderate,Yes,No,"Compara, eggNOG, Hieranoid, Isobase, OrthoDB, OrthoFinder, OrthoInspector, orthoMCL, Panther, TreeFam"
+chic,33834,FBgn0000308,chic,Human,375189,31103,PFN4,9,8.67,high,Yes,Yes,"Compara, eggNOG, Inparanoid, Isobase, OrthoFinder, OrthoInspector, orthoMCL, Phylome, RoundUp"
+RpS5a,32700,FBgn0002590,RpS5a,Human,6193,10426,RPS5,13,12.9,high,Yes,Yes,"Compara, Hieranoid, Homologene, Inparanoid, OMA, OrthoDB, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, RoundUp, TreeFam"
+COX6B,32989,FBgn0031066,COX6B,Human,1340,2280,COX6B1,13,12.81,high,Yes,Yes,"eggNOG, Hieranoid, Homologene, Inparanoid, Isobase, OMA, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, RoundUp, TreeFam"
+RpS5b,41807,FBgn0038277,RpS5b,Human,6193,10426,RPS5,10,9.86,moderate,Yes,No,"Compara, Hieranoid, Inparanoid, OrthoDB, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, TreeFam"
+Rtnl1,33721,FBgn0053113,Rtnl1,Human,57142,14085,RTN4,9,8.97,high,Yes,Yes,"Compara, eggNOG, Hieranoid, Inparanoid, OrthoFinder, OrthoInspector, Panther, RoundUp, TreeFam"
+Rtnl1,33721,FBgn0053113,Rtnl1,Human,10313,10469,RTN3,9,8.84,high,Yes,Yes,"Compara, eggNOG, OMA, OrthoFinder, OrthoInspector, Panther, Phylome, RoundUp, TreeFam"
+Rtnl1,33721,FBgn0053113,Rtnl1,Human,6252,10467,RTN1,9,8.73,high,Yes,Yes,"Compara, eggNOG, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, RoundUp, TreeFam"
+wupA,32794,FBgn0283471,wupA,Human,7136,11946,TNNI2,12,11.9,high,Yes,Yes,"Compara, eggNOG, Hieranoid, Inparanoid, OMA, OrthoDB, OrthoFinder, OrthoInspector, Panther, Phylome, RoundUp, TreeFam"
+wupA,32794,FBgn0283471,wupA,Human,7135,11945,TNNI1,12,11.9,high,Yes,Yes,"Compara, eggNOG, Hieranoid, Inparanoid, OMA, OrthoDB, OrthoFinder, OrthoInspector, Panther, Phylome, RoundUp, TreeFam"
+wupA,32794,FBgn0283471,wupA,Human,7137,11947,TNNI3,12,11.77,high,Yes,Yes,"Compara, eggNOG, Hieranoid, Inparanoid, OMA, OrthoDB, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, TreeFam"
+RpL32,43573,FBgn0002626,RpL32,Human,6161,10336,RPL32,13,12.87,high,Yes,Yes,"eggNOG, Hieranoid, Homologene, Inparanoid, OMA, OrthoDB, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, RoundUp, TreeFam"
+Cp36,31787,FBgn0000359,Cp36,,,,,0,0,None,,,
+Lsp1gamma,38015,FBgn0002564,Lsp1gamma,,,,,0,0,None,,,
+CG5377-RA,42645,FBgn0038974,CG5377,Human,670,1094,BPHL,14,13.8,high,Yes,Yes,"Compara, eggNOG, Hieranoid, Homologene, Inparanoid, OMA, OrthoDB, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, RoundUp, TreeFam"
+RpL30,44059,FBgn0086710,RpL30,Human,6156,10333,RPL30,11,11.04,high,Yes,Yes,"Compara, Hieranoid, Homologene, Inparanoid, OMA, OrthoDB, OrthoFinder, OrthoInspector, Panther, Phylome, RoundUp"
+RpS17,39088,FBgn0005533,RpS17,Human,6218,10397,RPS17,13,12.8,high,Yes,Yes,"Compara, eggNOG, Hieranoid, Inparanoid, OMA, OrthoDB, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, RoundUp, TreeFam"
+wupA,32794,FBgn0283471,wupA,Human,7136,11946,TNNI2,12,11.9,high,Yes,Yes,"Compara, eggNOG, Hieranoid, Inparanoid, OMA, OrthoDB, OrthoFinder, OrthoInspector, Panther, Phylome, RoundUp, TreeFam"
+wupA,32794,FBgn0283471,wupA,Human,7135,11945,TNNI1,12,11.9,high,Yes,Yes,"Compara, eggNOG, Hieranoid, Inparanoid, OMA, OrthoDB, OrthoFinder, OrthoInspector, Panther, Phylome, RoundUp, TreeFam"
+wupA,32794,FBgn0283471,wupA,Human,7137,11947,TNNI3,12,11.77,high,Yes,Yes,"Compara, eggNOG, Hieranoid, Inparanoid, OMA, OrthoDB, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, TreeFam"
+tmod,43633,FBgn0082582,tmod,Human,7111,11871,TMOD1,13,12.84,high,Yes,Yes,"Compara, eggNOG, Hieranoid, Homologene, Inparanoid, OMA, OrthoDB, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, RoundUp"
+GstE6,37111,FBgn0063494,GstE6,Human,2953,4642,GSTT2,4,3.84,moderate,Yes,No,"Compara, OrthoDB, OrthoFinder, orthoMCL"
+GstE6,37111,FBgn0063494,GstE6,Human,653689,33437,GSTT2B,4,3.73,moderate,Yes,No,"Compara, eggNOG, OrthoFinder, orthoMCL"
+ND-B22,34747,FBgn0032511,ND-B22,Human,4715,7704,NDUFB9,15,14.75,high,Yes,Yes,"Compara, eggNOG, Hieranoid, Homologene, Inparanoid, Isobase, OMA, OrthoDB, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, RoundUp, TreeFam"
+CG12896-RA,36101,FBgn0033521,CG12896,Human,9588,16753,PRDX6,10,9.74,moderate,Yes,No,"Compara, eggNOG, Hieranoid, OrthoDB, OrthoFinder, orthoMCL, Panther, Phylome, RoundUp, TreeFam"
+RPA2,35364,FBgn0032906,RPA2,Human,6118,10290,RPA2,13,12.87,high,Yes,Yes,"eggNOG, Hieranoid, Homologene, Inparanoid, OMA, OrthoDB, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, RoundUp, TreeFam"
+mt:ATPase8,19893538,FBgn0013673,ATP8,,,,,0,0,None,,,
+TotA,44121,FBgn0028396,TotA,,,,,0,0,None,,,
+ND-B17.2,33443,FBgn0031436,ND-B17.2,Human,55967,23987,NDUFA12,15,14.75,high,Yes,Yes,"Compara, eggNOG, Hieranoid, Homologene, Inparanoid, Isobase, OMA, OrthoDB, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, RoundUp, TreeFam"
+TotC,117462,FBgn0044812,TotC,,,,,0,0,None,,,
+CG18190-RB,37179,FBgn0034403,CG18190,Human,10982,6891,MAPRE2,8,7.73,moderate,Yes,No,"eggNOG, Isobase, OrthoDB, OrthoFinder, orthoMCL, Panther, Phylome, TreeFam"
+ND-B18,32434,FBgn0030605,ND-B18,Human,4713,7702,NDUFB7,15,14.75,high,Yes,Yes,"Compara, eggNOG, Hieranoid, Homologene, Inparanoid, Isobase, OMA, OrthoDB, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, RoundUp, TreeFam"
+Lsp1alpha,32199,FBgn0002562,Lsp1alpha,,,,,0,0,None,,,
+CG10407,41949,FBgn0038395,CG10407,,,,,0,0,None,,,
+Cpr65Au,59158,FBgn0042119,Cpr65Au,,,,,0,0,None,,,
+CT37195,33591,FBgn0031560,CG16713,Human,100526773,38825,EPPIN-WFDC6,5,4.95,moderate,Yes,No,"eggNOG, Hieranoid, Inparanoid, OrthoFinder, OrthoInspector"
+Mdr50,36582,FBgn0010241,Mdr50,Human,5243,40,ABCB1,11,11.05,high,Yes,Yes,"Hieranoid, Homologene, Inparanoid, Isobase, OMA, OrthoDB, OrthoFinder, OrthoInspector, orthoMCL, Panther, RoundUp"
+Mlc1,43323,FBgn0002772,Mlc1,Human,4637,7587,MYL6,4,3.92,moderate,Yes,No,"eggNOG, OrthoDB, Panther, Phylome"
+Mlc1,43323,FBgn0002772,Mlc1,Human,4635,7585,MYL4,4,3.92,moderate,Yes,No,"eggNOG, OrthoDB, Panther, Phylome"
+Mlc1,43323,FBgn0002772,Mlc1,Human,140465,29823,MYL6B,4,3.92,moderate,Yes,No,"eggNOG, OrthoDB, Panther, Phylome"
+Mlc1,43323,FBgn0002772,Mlc1,Human,4632,7582,MYL1,4,3.92,moderate,Yes,No,"eggNOG, OrthoDB, Panther, Phylome"
+Mlc1,43323,FBgn0002772,Mlc1,Human,4634,7584,MYL3,4,3.92,moderate,Yes,No,"eggNOG, OrthoDB, Panther, Phylome"
+Clic,32349,FBgn0030529,Clic,Human,1193,2063,CLIC2,13,12.74,high,Yes,Yes,"Compara, eggNOG, Hieranoid, Inparanoid, Isobase, OrthoDB, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, RoundUp, TreeFam"
+Rpn11,33738,FBgn0028694,Rpn11,Human,10213,16889,PSMD14,15,14.75,high,Yes,Yes,"Compara, eggNOG, Hieranoid, Homologene, Inparanoid, Isobase, OMA, OrthoDB, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, RoundUp, TreeFam"
+Cp15,38999,FBgn0000355,Cp15,,,,,0,0,None,,,
+lark,38811,FBgn0011640,lark,Human,5936,9901,RBM4,10,9.76,high,Yes,Yes,"Compara, eggNOG, Inparanoid, OrthoDB, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, TreeFam"
+mRpL27,318825,FBgn0053002,mRpL27,Human,51264,14483,MRPL27,12,11.84,high,Yes,Yes,"eggNOG, Hieranoid, Homologene, Inparanoid, OMA, OrthoDB, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, TreeFam"
+anon-SAGE:Wang-073,38783,FBgn0250836,Acbp3,Human,414149,17715,ACBD7,6,5.82,moderate,Yes,No,"eggNOG, Hieranoid, OMA, OrthoDB, OrthoFinder, orthoMCL"
+CG34215,5740170,FBgn0085244,CG34215,,,,,0,0,None,,,
+CG43090,12798122,FBgn0262536,CG43090,,,,,0,0,None,,,
+Cp16,39001,FBgn0000356,Cp16,,,,,0,0,None,,,
+Ubc6,40610,FBgn0004436,Ubc6,Human,7320,12473,UBE2B,13,12.8,high,Yes,Yes,"Compara, eggNOG, Hieranoid, Inparanoid, OMA, OrthoDB, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, RoundUp, TreeFam"
+mt:ND5,19893549,FBgn0013684,ND5,Human,4540,7461,ND5,10,10.04,high,Yes,Yes,"Compara, Hieranoid, Inparanoid, OMA, OrthoDB, OrthoFinder, OrthoInspector, Panther, Phylome, RoundUp"
+CG12384,36224,FBgn0033624,CG12384,Human,1611,2672,DAP,10,9.96,high,Yes,Yes,"eggNOG, Hieranoid, Inparanoid, OMA, OrthoFinder, OrthoInspector, Panther, Phylome, RoundUp, TreeFam"
+ox,45401,FBgn0011227,ox,Human,29796,30863,UQCR10,11,10.97,high,Yes,Yes,"eggNOG, Hieranoid, Inparanoid, OMA, OrthoDB, OrthoFinder, OrthoInspector, Panther, Phylome, RoundUp, TreeFam"
+Tsp42Ea,59178,FBgn0029508,Tsp42Ea,Human,967,1692,CD63,3,3.01,moderate,Yes,No,"Hieranoid, Panther, Phylome"
+BcDNA:GM03875,33928,FBgn0051635,CG31635,Human,284352,27607,PPP1R37,8,7.84,high,Yes,Yes,"Compara, eggNOG, Inparanoid, OrthoFinder, OrthoInspector, orthoMCL, Panther, TreeFam"
+cana,3771934,FBgn0040233,cana,Human,1062,1856,CENPE,8,7.88,moderate,Yes,No,"Compara, eggNOG, Hieranoid, Inparanoid, OrthoFinder, OrthoInspector, orthoMCL, Panther"
+RpL34b,41120,FBgn0037686,RpL34b,Human,6164,10340,RPL34,11,10.77,high,Yes,Yes,"eggNOG, Hieranoid, Inparanoid, OMA, OrthoDB, OrthoFinder, OrthoInspector, orthoMCL, Phylome, RoundUp, TreeFam"
+Cp38,31788,FBgn0000360,Cp38,,,,,0,0,None,,,
+rdx,41704,FBgn0264493,rdx,Human,8405,11254,SPOP,10,9.81,high,Yes,Yes,"eggNOG, Homologene, OMA, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, RoundUp, TreeFam"
+NP15.6,42282,FBgn0027785,NP15.6,Human,54539,20372,NDUFB11,12,11.79,high,Yes,Yes,"Compara, eggNOG, Hieranoid, Inparanoid, OrthoDB, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, RoundUp, TreeFam"
+Ugt35b,41333,FBgn0026314,Ugt35B1,Human,79799,28528,UGT2A3,10,9.82,high,Yes,Yes,"Compara, eggNOG, Hieranoid, Homologene, Inparanoid, OrthoInspector, orthoMCL, Panther, Phylome, RoundUp"
+Ugt35b,41333,FBgn0026314,Ugt35B1,Human,7366,12546,UGT2B15,10,9.77,high,Yes,Yes,"Compara, eggNOG, Hieranoid, Inparanoid, Isobase, OrthoInspector, orthoMCL, Panther, Phylome, RoundUp"
+PIG-K,31163,FBgn0023545,PIG-K,Human,10026,8965,PIGK,15,14.75,high,Yes,Yes,"Compara, eggNOG, Hieranoid, Homologene, Inparanoid, Isobase, OMA, OrthoDB, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, RoundUp, TreeFam"
+CG33099-RA,326254,FBgn0053099,CG33099,,,,,0,0,None,,,
+Ady43A,44750,FBgn0026602,Ady43A,Human,132,257,ADK,5,4.92,moderate,Yes,No,"eggNOG, Isobase, OrthoDB, Panther, TreeFam"
+RpL37A,44783,FBgn0261608,RpL37A,Human,6168,10348,RPL37A,12,11.77,high,Yes,Yes,"eggNOG, Hieranoid, Homologene, Inparanoid, OMA, OrthoDB, OrthoFinder, OrthoInspector, orthoMCL, Phylome, RoundUp, TreeFam"
+hgo,34552,FBgn0040211,hgo,Human,3081,4892,HGD,15,14.75,high,Yes,Yes,"Compara, eggNOG, Hieranoid, Homologene, Inparanoid, Isobase, OMA, OrthoDB, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, RoundUp, TreeFam"
+TpnC73F,39916,FBgn0010424,TpnC73F,Human,163688,24193,CALML6,3,2.96,moderate,Yes,No,"eggNOG, Panther, TreeFam"
+vih,44118,FBgn0264848,vih,Human,11065,15937,UBE2C,15,14.75,high,Yes,Yes,"Compara, eggNOG, Hieranoid, Homologene, Inparanoid, Isobase, OMA, OrthoDB, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, RoundUp, TreeFam"
+GstD10,59240,FBgn0042206,GstD10,Human,2953,4642,GSTT2,3,2.94,moderate,Yes,No,"Compara, OrthoDB, OrthoFinder"
+GstD10,59240,FBgn0042206,GstD10,Human,25774,26930,GSTT4,3,2.94,moderate,Yes,No,"Compara, OrthoDB, OrthoFinder"
+GstD10,59240,FBgn0042206,GstD10,Human,653689,33437,GSTT2B,3,2.83,moderate,Yes,No,"Compara, eggNOG, OrthoFinder"
+Rala,31332,FBgn0015286,Rala,Human,5898,9839,RALA,13,12.87,high,Yes,Yes,"eggNOG, Hieranoid, Homologene, Inparanoid, OMA, OrthoDB, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, RoundUp, TreeFam"
+Rrp46,41270,FBgn0037815,Rrp46,Human,56915,24662,EXOSC5,15,14.75,high,Yes,Yes,"Compara, eggNOG, Hieranoid, Homologene, Inparanoid, Isobase, OMA, OrthoDB, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, RoundUp, TreeFam"
+Cp18,38998,FBgn0000357,Cp18,,,,,0,0,None,,,
+Drsl4,317954,FBgn0052282,Drsl4,,,,,0,0,None,,,
+Vm26Aa,33829,FBgn0003979,Vm26Aa,,,,,0,0,None,,,
+AQP,36456,FBgn0033807,AQP,Human,653437,6096,AQP12B,12,11.77,high,Yes,Yes,"Compara, eggNOG, Hieranoid, Inparanoid, OMA, OrthoDB, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, TreeFam"
+AQP,36456,FBgn0033807,AQP,Human,375318,19941,AQP12A,12,11.77,high,Yes,Yes,"Compara, eggNOG, Hieranoid, Inparanoid, OMA, OrthoDB, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, TreeFam"
+Akh,38495,FBgn0004552,Akh,,,,,0,0,None,,,
+CG9344,37372,FBgn0034564,CG9344,Human,11157,17017,LSM6,14,13.8,high,Yes,Yes,"Compara, eggNOG, Hieranoid, Homologene, Inparanoid, OMA, OrthoDB, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, RoundUp, TreeFam"
+Lcp65Ag1,38703,FBgn0020638,Lcp65Ag1,,,,,0,0,None,,,
+CG6337,36530,FBgn0033873,CG6337,Human,1514,2537,CTSL,2,1.91,moderate,Yes,No,"eggNOG, OrthoDB"
+CG6337,36530,FBgn0033873,CG6337,Human,1520,2545,CTSS,2,1.91,moderate,Yes,No,"eggNOG, OrthoDB"
+CG6337,36530,FBgn0033873,CG6337,Human,1075,2528,CTSC,2,1.91,high,Yes,Yes,"eggNOG, OrthoDB"
+CG6337,36530,FBgn0033873,CG6337,Human,1515,2538,CTSV,2,1.91,moderate,Yes,No,"eggNOG, OrthoDB"
+CG6337,36530,FBgn0033873,CG6337,Human,1513,2536,CTSK,2,1.91,moderate,Yes,No,"eggNOG, OrthoDB"
+mrn,39688,FBgn0261109,mrn,Human,2968,4658,GTF2H4,14,13.8,high,Yes,Yes,"Compara, eggNOG, Hieranoid, Homologene, Inparanoid, OMA, OrthoDB, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, RoundUp, TreeFam"
+CG6191,36513,FBgn0027581,CG6191,Human,91768,25097,CABLES1,10,9.78,high,Yes,Yes,"Compara, eggNOG, Inparanoid, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, RoundUp, TreeFam"
+Kaz1-ORFB,3772691,FBgn0063923,Kaz1-ORFB,,,,,0,0,None,,,
+CG45089,19835262,FBgn0266490,CG45089,,,,,0,0,None,,,
+Cpr64Aa,38508,FBgn0035510,Cpr64Aa,,,,,0,0,None,,,
+Dot,44058,FBgn0015663,Ugt36A1,Human,54658,12530,UGT1A1,5,4.84,moderate,Yes,No,"Compara, eggNOG, Hieranoid, Panther, Phylome"
+Dot,44058,FBgn0015663,Ugt36A1,Human,7363,12553,UGT2B4,5,4.84,moderate,Yes,No,"Compara, eggNOG, Hieranoid, Panther, Phylome"
+Dot,44058,FBgn0015663,Ugt36A1,Human,7368,12555,UGT8,5,4.84,moderate,Yes,No,"Compara, eggNOG, Hieranoid, Panther, Phylome"
+Dot,44058,FBgn0015663,Ugt36A1,Human,7366,12546,UGT2B15,5,4.84,moderate,Yes,No,"Compara, eggNOG, Hieranoid, Panther, Phylome"
+Dot,44058,FBgn0015663,Ugt36A1,Human,54490,13479,UGT2B28,5,4.84,moderate,Yes,No,"Compara, eggNOG, Hieranoid, Panther, Phylome"
+Dot,44058,FBgn0015663,Ugt36A1,Human,54659,12535,UGT1A3,5,4.84,moderate,Yes,No,"Compara, eggNOG, Hieranoid, Panther, Phylome"
+Dot,44058,FBgn0015663,Ugt36A1,Human,7367,12547,UGT2B17,5,4.84,moderate,Yes,No,"Compara, eggNOG, Hieranoid, Panther, Phylome"
+Dot,44058,FBgn0015663,Ugt36A1,Human,10720,12545,UGT2B11,5,4.84,moderate,Yes,No,"Compara, eggNOG, Hieranoid, Panther, Phylome"
+Dot,44058,FBgn0015663,Ugt36A1,Human,79799,28528,UGT2A3,5,4.84,moderate,Yes,No,"Compara, eggNOG, Hieranoid, Panther, Phylome"
+Dot,44058,FBgn0015663,Ugt36A1,Human,7364,12554,UGT2B7,5,4.84,moderate,Yes,No,"Compara, eggNOG, Hieranoid, Panther, Phylome"
+Dot,44058,FBgn0015663,Ugt36A1,Human,7365,12544,UGT2B10,5,4.84,moderate,Yes,No,"Compara, eggNOG, Hieranoid, Panther, Phylome"
+Dot,248381,FBgn0000483,dotted,,,,,0,0,None,,,
+CG3792,33717,FBgn0031662,CG3792,Human,9526,7207,MPDU1,13,12.79,high,Yes,Yes,"Compara, eggNOG, Hieranoid, Homologene, Inparanoid, OMA, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, RoundUp, TreeFam"
+FIG4,33658,FBgn0031611,FIG4,Human,9896,16873,FIG4,14,13.8,high,Yes,Yes,"Compara, eggNOG, Hieranoid, Homologene, Inparanoid, OMA, OrthoDB, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, RoundUp, TreeFam"
+Arl1,39745,FBgn0000115,Arl1,Human,400,692,ARL1,14,13.8,high,Yes,Yes,"Compara, eggNOG, Hieranoid, Homologene, Inparanoid, OMA, OrthoDB, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, RoundUp, TreeFam"
+mRpS11,42061,FBgn0038474,mRpS11,Human,64963,14050,MRPS11,12,11.79,high,Yes,Yes,"Compara, eggNOG, Hieranoid, Inparanoid, OrthoDB, OrthoFinder, OrthoInspector, orthoMCL, Panther, Phylome, RoundUp, TreeFam"
+Fbp1,39566,FBgn0000639,Fbp1,,,,,0,0,None,,,
+SP170,39123,FBgn0036022,CG8329,Human,440387,2522,CTRB2,1,1.01,low,Yes,No,OrthoDB
+SP170,39123,FBgn0036022,CG8329,Human,9475,10252,ROCK2,1,1.01,low,Yes,No,OrthoDB
+SP170,39123,FBgn0036022,CG8329,Human,1506,2524,CTRL,1,1.01,low,Yes,Yes,OrthoDB
+SP170,39123,FBgn0036022,CG8329,Human,5652,9491,PRSS8,1,1,low,Yes,No,Hieranoid
+SP170,39123,FBgn0036022,CG8329,Human,64063,14368,PRSS22,1,1,low,Yes,No,Hieranoid
+SP170,39123,FBgn0036022,CG8329,Human,25823,14134,TPSG1,1,1,low,Yes,No,Hieranoid
+SP170,39123,FBgn0036022,CG8329,Human,260429,30405,PRSS33,1,1,low,Yes,No,Hieranoid
+SP170,39123,FBgn0036022,CG8329,Human,23430,14118,TPSD1,1,1,low,Yes,No,Hieranoid
+SP170,39123,FBgn0036022,CG8329,Human,83886,15475,PRSS27,1,1,low,Yes,No,Hieranoid
+SP170,39123,FBgn0036022,CG8329,Human,360226,30715,PRSS41,1,1,low,Yes,No,Hieranoid
+SP170,39123,FBgn0036022,CG8329,Human,7177,12019,TPSAB1,1,1,low,Yes,No,Hieranoid
+SP170,39123,FBgn0036022,CG8329,Human,10942,9485,PRSS21,1,1,low,Yes,No,Hieranoid
+SP170,39123,FBgn0036022,CG8329,Human,345062,24635,PRSS48,1,1,low,Yes,No,Hieranoid
+SP170,39123,FBgn0036022,CG8329,Human,5650,6368,KLK7,1,0.95,low,Yes,No,Isobase
+SP170,39123,FBgn0036022,CG8329,Human,5624,9451,PROC,1,0.91,low,Yes,No,Phylome
+SP170,39123,FBgn0036022,CG8329,Human,716,1247,C1S,1,0.91,low,Yes,No,Phylome

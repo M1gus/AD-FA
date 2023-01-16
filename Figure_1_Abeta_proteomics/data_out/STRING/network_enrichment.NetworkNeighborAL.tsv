@@ -1,0 +1,28 @@
+#term ID	term description	observed gene count	background gene count	strength	false discovery rate	matching proteins in your network (IDs)	matching proteins in your network (labels)
+CL:9985	mixed, incl. Muscle protein, and Actin, conserved site	11	34	1.68	1.66e-12	7227.FBpp0071448,7227.FBpp0072306,7227.FBpp0073682,7227.FBpp0074298,7227.FBpp0076320,7227.FBpp0080452,7227.FBpp0082535,7227.FBpp0084565,7227.FBpp0088546,7227.FBpp0088904,7227.FBpp0297625	Act57B,zip,up,wupA,Prm,Mhc,Tm2,Mlc1,TpnC73F,Tm1,tmod
+CL:9976	mixed, incl. Muscle protein, and EF-hand, calcium binding motif	12	88	1.31	1.90e-10	7227.FBpp0071448,7227.FBpp0072306,7227.FBpp0073682,7227.FBpp0074298,7227.FBpp0076270,7227.FBpp0076320,7227.FBpp0080452,7227.FBpp0082535,7227.FBpp0084565,7227.FBpp0088546,7227.FBpp0088904,7227.FBpp0297625	Act57B,zip,up,wupA,Argk,Prm,Mhc,Tm2,Mlc1,TpnC73F,Tm1,tmod
+CL:9995	Troponin, and Thick filament	6	6	2.17	2.90e-09	7227.FBpp0073682,7227.FBpp0074298,7227.FBpp0076320,7227.FBpp0080452,7227.FBpp0082535,7227.FBpp0084565	up,wupA,Prm,Mhc,Tm2,Mlc1
+CL:9988	Muscle protein, and muscle alpha-actinin binding	7	19	1.74	1.05e-08	7227.FBpp0073682,7227.FBpp0074298,7227.FBpp0076320,7227.FBpp0080452,7227.FBpp0082535,7227.FBpp0084565,7227.FBpp0088546	up,wupA,Prm,Mhc,Tm2,Mlc1,TpnC73F
+CL:7868	respirasome, and Complex I biogenesis	9	101	1.12	1.32e-06	7227.FBpp0073777,7227.FBpp0074584,7227.FBpp0080051,7227.FBpp0080446,7227.FBpp0083126,7227.FBpp0086974,7227.FBpp0100178,7227.FBpp0100182,7227.FBpp0271901	ND-B18,COX6B,ND-B22,Cyt-c-p,NP15.6,ox,mt:ATPase8,mt:ND5,ND-B17.2
+CL:22998	mixed, incl. Storage protein, and nutrient reservoir activity	5	12	1.79	1.73e-06	7227.FBpp0072365,7227.FBpp0073110,7227.FBpp0073484,7227.FBpp0075491,7227.FBpp0088363	Lsp1gamma,Cpr64Aa,Lsp1alpha,Fbp1,Lsp2
+CL:21437	external encapsulating structure, and Vitelline membrane cysteine-rich region	6	46	1.29	2.57e-05	7227.FBpp0071150,7227.FBpp0076298,7227.FBpp0076299,7227.FBpp0076301,7227.FBpp0289676,7227.FBpp0305434	Cp36,Cp18,Cp15,Cp16,Cp38,Vm26Aa
+CL:10029	Actin, conserved site, and compartment boundary maintenance	4	12	1.69	5.34e-05	7227.FBpp0071448,7227.FBpp0072306,7227.FBpp0088904,7227.FBpp0297625	Act57B,zip,Tm1,tmod
+CL:7869	mitochondrial respirasome, and Complex I biogenesis	7	87	1.08	5.34e-05	7227.FBpp0073777,7227.FBpp0074584,7227.FBpp0080051,7227.FBpp0080446,7227.FBpp0083126,7227.FBpp0086974,7227.FBpp0271901	ND-B18,COX6B,ND-B22,Cyt-c-p,NP15.6,ox,ND-B17.2
+CL:21439	chorion, and Chorion S36/S38	5	31	1.38	6.01e-05	7227.FBpp0071150,7227.FBpp0076298,7227.FBpp0076299,7227.FBpp0076301,7227.FBpp0289676	Cp36,Cp18,Cp15,Cp16,Cp38
+CL:471	SRP-dependent cotranslational protein targeting to membrane	7	91	1.06	6.01e-05	7227.FBpp0074180,7227.FBpp0076207,7227.FBpp0081527,7227.FBpp0082465,7227.FBpp0084959,7227.FBpp0291653,7227.FBpp0291726	RpS5a,RpS17,RpL34b,RpS5b,RpL32,RpL30,RpL37A
+CL:10031	mixed, incl. Tropomodulin, and stress fiber assembly	3	5	1.95	0.00019	7227.FBpp0072306,7227.FBpp0088904,7227.FBpp0297625	zip,Tm1,tmod
+CL:23001	Storage protein, and response to pheromone	3	6	1.87	0.00027	7227.FBpp0072365,7227.FBpp0073484,7227.FBpp0088363	Lsp1gamma,Lsp1alpha,Lsp2
+CL:473	SRP-dependent cotranslational protein targeting to membrane	6	80	1.05	0.00027	7227.FBpp0074180,7227.FBpp0076207,7227.FBpp0081527,7227.FBpp0082465,7227.FBpp0084959,7227.FBpp0291653	RpS5a,RpS17,RpL34b,RpS5b,RpL32,RpL30
+CL:7881	mitochondrial electron transport, NADH to ubiquinone	4	23	1.41	0.00031	7227.FBpp0073777,7227.FBpp0080051,7227.FBpp0083126,7227.FBpp0271901	ND-B18,ND-B22,NP15.6,ND-B17.2
+CL:21442	Chorion 2, and chorion	3	10	1.65	0.00067	7227.FBpp0076298,7227.FBpp0076299,7227.FBpp0076301	Cp18,Cp15,Cp16
+CL:7885	mitochondrial electron transport, NADH to ubiquinone	3	11	1.61	0.00082	7227.FBpp0073777,7227.FBpp0080051,7227.FBpp0271901	ND-B18,ND-B22,ND-B17.2
+CL:7998	mitochondrial electron transport, ubiquinol to cytochrome c, and mitochondrial respiratory chain complex IV	3	18	1.39	0.0023	7227.FBpp0074584,7227.FBpp0080446,7227.FBpp0086974	COX6B,Cyt-c-p,ox
+CL:13062	Stress-inducible humoral factor Turandot	2	5	1.77	0.0055	7227.FBpp0083378,7227.FBpp0083379	TotA,TotC
+CL:21477	mixed, incl. Chorion S36/S38, and Protein of unknown function DUF4744	2	6	1.69	0.0070	7227.FBpp0071150,7227.FBpp0289676	Cp36,Cp38
+CL:7886	mixed, incl. acyl binding, and Zinc-finger domain	2	6	1.69	0.0070	7227.FBpp0080051,7227.FBpp0271901	ND-B22,ND-B17.2
+CL:22080	mixed, incl. Proteinase inhibitor I2, Kunitz, conserved site, and hemolymph coagulation	2	7	1.63	0.0086	7227.FBpp0077236,7227.FBpp0305502	CG16713,CG2233
+CL:475	SRP-dependent cotranslational protein targeting to membrane	4	74	0.9	0.0101	7227.FBpp0074180,7227.FBpp0076207,7227.FBpp0081527,7227.FBpp0084959	RpS5a,RpS17,RpL34b,RpL32
+CL:21779	mostly uncharacterized, incl. Insect pheromone-binding family, A10/OS-D, and pheromone binding	2	12	1.39	0.0198	7227.FBpp0072925,7227.FBpp0076768	Drsl4,Cpr65Au
+CL:7999	mitochondrial electron transport, ubiquinol to cytochrome c	2	12	1.39	0.0198	7227.FBpp0080446,7227.FBpp0086974	Cyt-c-p,ox
+CL:22622	UDP-glycosyltransferase family, conserved site, and Carboxylesterase type B, active site	2	13	1.36	0.0216	7227.FBpp0077221,7227.FBpp0081851	Dot,Ugt35b
+CL:7355	Glutathione S-transferase, C-terminal domain	2	17	1.24	0.0340	7227.FBpp0082079,7227.FBpp0085855	GstD10,GstE6

@@ -1,0 +1,25 @@
+#term ID	term description	observed gene count	background gene count	strength	false discovery rate	matching proteins in your network (IDs)	matching proteins in your network (labels)
+IPR005203	Hemocyanin, C-terminal	4	10	1.77	0.00032	7227.FBpp0072365,7227.FBpp0073484,7227.FBpp0075491,7227.FBpp0088363	Lsp1gamma,Lsp1alpha,Fbp1,Lsp2
+IPR005204	Hemocyanin, N-terminal	4	10	1.77	0.00032	7227.FBpp0072365,7227.FBpp0073484,7227.FBpp0075491,7227.FBpp0088363	Lsp1gamma,Lsp1alpha,Fbp1,Lsp2
+IPR013788	Hemocyanin/hexamerin	4	10	1.77	0.00032	7227.FBpp0072365,7227.FBpp0073484,7227.FBpp0075491,7227.FBpp0088363	Lsp1gamma,Lsp1alpha,Fbp1,Lsp2
+IPR036697	Hemocyanin, N-terminal domain superfamily	4	10	1.77	0.00032	7227.FBpp0072365,7227.FBpp0073484,7227.FBpp0075491,7227.FBpp0088363	Lsp1gamma,Lsp1alpha,Fbp1,Lsp2
+IPR037020	Hemocyanin, C-terminal domain superfamily	4	10	1.77	0.00032	7227.FBpp0072365,7227.FBpp0073484,7227.FBpp0075491,7227.FBpp0088363	Lsp1gamma,Lsp1alpha,Fbp1,Lsp2
+IPR002928	Myosin tail	3	5	1.95	0.00047	7227.FBpp0072306,7227.FBpp0076320,7227.FBpp0080452	zip,Prm,Mhc
+IPR000896	Hemocyanin/hexamerin middle domain	3	8	1.74	0.0012	7227.FBpp0072365,7227.FBpp0073484,7227.FBpp0088363	Lsp1gamma,Lsp1alpha,Lsp2
+IPR008922	Uncharacterised domain, di-copper centre	3	8	1.74	0.0012	7227.FBpp0072365,7227.FBpp0073484,7227.FBpp0088363	Lsp1gamma,Lsp1alpha,Lsp2
+IPR000235	Ribosomal protein S5/S7	2	3	1.99	0.0052	7227.FBpp0074180,7227.FBpp0082465	RpS5a,RpS5b
+IPR000533	Tropomyosin	2	2	2.17	0.0052	7227.FBpp0082535,7227.FBpp0088904	Tm2,Tm1
+IPR001978	Troponin	2	2	2.17	0.0052	7227.FBpp0073682,7227.FBpp0074298	up,wupA
+IPR004009	Myosin, N-terminal, SH3-like	2	3	1.99	0.0052	7227.FBpp0072306,7227.FBpp0080452	zip,Mhc
+IPR005649	Chorion 2	2	3	1.99	0.0052	7227.FBpp0076298,7227.FBpp0076299	Cp18,Cp15
+IPR005716	Ribosomal protein S5/S7, eukaryotic/archaeal	2	2	2.17	0.0052	7227.FBpp0074180,7227.FBpp0082465	RpS5a,RpS5b
+IPR008449	Chorion S36/S38	2	2	2.17	0.0052	7227.FBpp0071150,7227.FBpp0289676	Cp36,Cp38
+IPR020606	Ribosomal protein S7, conserved site	2	2	2.17	0.0052	7227.FBpp0074180,7227.FBpp0082465	RpS5a,RpS5b
+IPR023798	Ribosomal protein S7 domain	2	3	1.99	0.0052	7227.FBpp0074180,7227.FBpp0082465	RpS5a,RpS5b
+IPR027401	Myosin IQ motif-containing domain superfamily	2	3	1.99	0.0052	7227.FBpp0072306,7227.FBpp0080452	zip,Mhc
+IPR036823	Ribosomal protein S7 domain superfamily	2	3	1.99	0.0052	7227.FBpp0074180,7227.FBpp0082465	RpS5a,RpS5b
+IPR038077	Troponin domain superfamily	2	2	2.17	0.0052	7227.FBpp0073682,7227.FBpp0074298	up,wupA
+IPR014756	Immunoglobulin E-set	4	68	0.94	0.0116	7227.FBpp0072365,7227.FBpp0073484,7227.FBpp0075491,7227.FBpp0088363	Lsp1gamma,Lsp1alpha,Fbp1,Lsp2
+IPR010825	Stress-inducible humoral factor Turandot	2	8	1.57	0.0156	7227.FBpp0083378,7227.FBpp0083379	TotA,TotC
+IPR001609	Myosin head, motor domain	2	14	1.33	0.0388	7227.FBpp0072306,7227.FBpp0080452	zip,Mhc
+IPR036282	Glutathione S-transferase, C-terminal domain superfamily	3	50	0.95	0.0398	7227.FBpp0082079,7227.FBpp0085855,7227.FBpp0304104	GstD10,GstE6,Clic

@@ -1,0 +1,2292 @@
+---
+title: "Yu et al. 2022"
+author: "Yizhou Yu, MRC Toxicology Unit, University of Cambridge, (yzy21 at mrc-tox.cam.ac.uk)"
+date: "June 2022"
+output: rmarkdown::github_document
+---
+
+# General information
+
+This pipeline relates to data included in **Figure 5** and **Figure 6** of out manuscript titled **XXXXXXXX**. It also contains additional supplementary materials.
+
+The input files for this analysis pipeline are on the master branch of this GitHub page
+(link: https://github.com/M1gus/)
+
+The UK Biobank data is not available in the repository as they require separate application. Please visit ukbiobank.ac.uk for more information. A detailed list of the variables used in the UK Biobank analysis is available here:
+
+**Variables from the UK Biobank**
+
+```{r}
+read.csv("data/metadt/metadt_UKB.csv")
+```
+
+```{r results = "asis", message = FALSE, warning=FALSE}
+library(stargazer)
+stargazer(read.csv("data/metadt/metadt_UKB.csv"), summary=FALSE, rownames=FALSE, type = "html")
+```
+
+The selection of cognitive tests are based on [Fawns-Ritchie, 2020](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7170235/). 
+<br> The variables are:
+- UKB TMT (Trail Making Test) part B and UKB Symbol Digit tests: executive function and processing speed respectively
+- UKB RT (reaction time), UKB Numeric Memory, UKB TMT part A, UKB PAL, and UKB Matrices: processing speed, working memory, executive function, Verbal declarative memory, Non-verbal reasoning respectively
+
+Note: I did not consider this test "UK Biobank Picture Vocabulary test: measure of crystallised ability" (fields 6364-2.0 and 6364-3.0) because a paper showed that it was less correlated with AD patients (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5018443/). However, that paper used the discrepancy between fluid vs crystallised abilities and showed that it correlated with cortical Abeta deposition. This should be something to account in the future.
+
+# Data curation
+
+## Load libraries
+```{r message = FALSE, warning=FALSE}
+library(dplyr)
+library(reshape)
+library(corrplot)
+library(RColorBrewer)
+library(MASS)
+library(Hmisc)
+library(car)
+```
+
+## Curate the UKB phenotype data
+
+### Create datasets for cognitive, imaging and general data
+
+#### General dataset
+```{bash eval = FALSE}
+/home/yizhouyu/anaconda3/bin/python python_scripts/UKB_selColumns.py \
+-i /home/yizhouyu/raid/UKB_dt_18-4-2020/ukb41646.csv \
+-c data/metadt/metadt_UKB.csv \
+-o data/UKB_dt.csv
+```
+#### Cognition dataset
+
+```{bash eval = FALSE}
+/home/yizhouyu/anaconda3/bin/python python_scripts/UKB_selColumns_full_InfoFromFile.py \
+-i /home/yizhouyu/raid/ukb_cog_14092021/ukb48363.csv \
+-c data/metadt/metadt_cog.csv \
+-o data/cog_dt.csv
+```
+
+#### Imaging dataset
+IDP = image-derived phenotypes
+```{bash eval = FALSE}
+/home/yizhouyu/anaconda3/bin/python python_scripts/UKB_selColumns_full_InfoFromFile.py \
+-i /home/yizhouyu/raid/UKB_dt_18-4-2020/ukb41646.csv \
+-c data/metadt/metadt_idp.csv \
+-o data/idp_dt.csv
+```
+
+
+### Curate & label the datasets
+
+#### General 
+
+##### Decode 
+
+```{r}
+
+## import ukb data and rename variables
+rawdt = read.csv("data/UKB_dt.csv", na.strings=c("","NA"))
+colnames(rawdt)
+
+#aggregate the columns by selecting the last results, for each 
+ukb_pheno_dt_t = melt(rawdt, id='eid')
+# head(ukb_pheno_dt_t)
+
+#order by variable to make sure I am will be replacing the latest value 
+ukb_pheno_dt_t <- ukb_pheno_dt_t[order(ukb_pheno_dt_t$variable),] 
+
+#delete everything after period 
+ukb_pheno_dt_t$variable = gsub("\\..*","",ukb_pheno_dt_t$variable)
+
+#aggregate by last 
+ukb_t_na = na.omit(ukb_pheno_dt_t)
+ukb_t_na = aggregate(ukb_t_na, by=list(ukb_t_na$eid,ukb_t_na$variable), FUN=tail, n = 1)
+
+# Curate
+ukb_t_na = ukb_t_na[c("eid", "variable", "value")]
+ukb_t_na$variable = as.factor(ukb_t_na$variable)
+
+# put it back straight 
+ukb_cur = cast(ukb_t_na, eid~variable)
+
+```
+
+
+The variables to decode are: 
+
+```{r}
+ukb_decode = ukb_cur
+lvl.100291 <- c(-3.0,-1.0)
+lbl.100291 <- c("Prefer not to answer","Do not know")
+ukb_decode$X1160 <- replace(ukb_decode$X1160, which(ukb_decode$X1160 < 0), NA)
+
+lvl.100341 <- c(-3.0,-1.0,1.0,2.0,3.0,4.0)
+lbl.100341 <- c("Prefer not to answer","Do not know","Not at all easy","Not very easy","Fairly easy","Very easy")
+ukb_decode$X1170 <- ordered(ukb_decode$X1170, levels=lvl.100341, labels=lbl.100341)
+
+lvl.100342 <- c(-3.0,-1.0,1.0,2.0,3.0,4.0)
+lbl.100342 <- c("Prefer not to answer","Do not know","Definitely a \'morning\' person","More a \'morning\' than \'evening\' person","More an \'evening\' than a \'morning\' person","Definitely an \'evening\' person")
+ukb_decode$X1180 <- ordered(ukb_decode$X1180, levels=lvl.100342, labels=lbl.100342)
+
+lvl.100343 <- c(-3.0,1.0,2.0,3.0)
+lbl.100343 <- c("Prefer not to answer","Never/rarely","Sometimes","Usually")
+ukb_decode$X1190 <- ordered(ukb_decode$X1190, levels=lvl.100343, labels=lbl.100343)
+ukb_decode$X1200 <- ordered(ukb_decode$X1200, levels=lvl.100343, labels=lbl.100343)
+
+lvl.100346 <- c(-3.0,-1.0,0.0,1.0,2.0,3.0)
+lbl.100346 <- c("Prefer not to answer","Do not know","Never/rarely","Sometimes","Often","All of the time")
+ukb_decode$X1220 <- ordered(ukb_decode$X1220, levels=lvl.100346, labels=lbl.100346)
+
+lvl.0009 <- c(0.0,1.0)
+lbl.0009 <- c("Female","Male")
+ukb_decode$X31 <- ordered(ukb_decode$X31, levels=lvl.0009, labels=lbl.0009)
+
+lvl.0300 <- c(0.0,1.0,2.0)
+lbl.0300 <- c("Self-reported only","Hospital admission","Death only")
+lvl.0272 <- c(1.0)
+lbl.0272 <- c("Date is unknown")
+ukb_decode$X42021 <- ordered(ukb_decode$X42021, levels=lvl.0300, labels=lbl.0300)
+ukb_decode$X42020 <- ordered(ukb_decode$X42020, levels=lvl.0272, labels=lbl.0272)
+
+lvl.1001 <- c(-3,-1,1,2,3,4,5,6,1001,1002,1003,2001,2002,2003,2004,3001,3002,3003,3004,4001,4002,4003)
+lbl.1001 <- c("Prefer not to answer","Do not know","White","Mixed","Asian or Asian British","Black or Black British","Chinese","Other ethnic group","British","Irish","Any other white background","White and Black Caribbean","White and Black African","White and Asian","Any other mixed background","Indian","Pakistani","Bangladeshi","Any other Asian background","Caribbean","African","Any other Black background")
+ukb_decode$X21000 <- ordered(as.integer(ukb_decode$X21000), levels=lvl.1001, labels=lbl.1001)
+
+lvl.100305 <- c(-7,-3,1,2,3,4,5,6)
+lbl.100305 <- c("None of the above","Prefer not to answer","College or University degree","A levels/AS levels or equivalent","O levels/GCSEs or equivalent","CSEs or equivalent","NVQ or HND or HNC or equivalent","Other professional qualifications eg: nursing, teaching")
+ukb_decode$X6138 <- ordered(as.integer(ukb_decode$X6138), levels=lvl.100305, labels=lbl.100305)
+
+write.csv(ukb_decode,"data_out/preprocessed_UKB_dt.csv", row.names = F)
+```
+
+##### Fix column names
+Replace column names with good variables
+```{r}
+UKB_dt_colname_df = data.frame(col = colnames(ukb_decode)[-1])
+
+metadt_UKB = read.csv("data/metadt/metadt_UKB.csv")
+metadt_UKB$FieldID = paste("X", metadt_UKB$FieldID, sep = "")
+
+#join allows orders to be kept 
+#library(plyr)
+UKB_dt_colname_check = merge(UKB_dt_colname_df, metadt_UKB, by.x = "col", by.y = "FieldID")
+
+colnames(ukb_decode) <- c("eid", UKB_dt_colname_check$my_colname)
+write.csv(ukb_decode,"data_out/preprocessed_UKB_dt.csv", row.names = F)
+```
+
+
+#### Cognitive 
+
+##### Decode 
+
+```{r}
+
+## import ukb data and rename variables
+rawdt.cog = read.csv("data/cog_dt.csv", na.strings=c("","NA"))
+colnames(rawdt.cog)
+
+#aggregate the columns by selecting the last results, for each 
+cog_dt_t = melt(rawdt.cog, id='eid')
+
+#order by variable to make sure I am will be replacing the latest value 
+cog_dt_t <- cog_dt_t[order(cog_dt_t$variable),] 
+
+#delete everything after period 
+cog_dt_t$variable = gsub("\\..*","",cog_dt_t$variable)
+
+#aggregate by last 
+cog_dt_t_na = na.omit(cog_dt_t)
+cog_dt_t_na = aggregate(cog_dt_t_na, by=list(cog_dt_t_na$eid,cog_dt_t_na$variable), FUN=tail, n = 1)
+
+# Curate
+cog_dt_t_na = cog_dt_t_na[c("eid", "variable", "value")]
+cog_dt_t_na$variable = as.factor(cog_dt_t_na$variable)
+
+# put it back straight 
+cog_cur = cast(cog_dt_t_na, eid~variable)
+
+```
+
+```{r}
+cog_decode = cog_cur
+# alpha numeric
+lvl.1990 <- c(0)
+lbl.1990 <- c(NA)
+#cog_decode$X6348 <- ordered(as.integer(cog_decode$X6348), levels=lvl.1990, labels=lbl.1990)
+#cog_decode$X6350 <- ordered(as.integer(cog_decode$X6350), levels=lvl.1990, labels=lbl.1990)
+
+cog_decode$X6348[cog_decode$X6348 == lvl.1990]<-lbl.1990
+cog_decode$X6350[cog_decode$X6350 == lvl.1990]<-lbl.1990
+#pairs matching
+lvl.100696 <- c(-1)
+lbl.100696 <- c(NA)
+cog_decode$X4282[cog_decode$X4282 == lvl.100696]<-lbl.100696
+
+#cog_decode$X4282 <- ordered(as.integer(cog_decode$X4282), levels=lvl.100696, labels=lbl.100696)
+
+```
+
+##### Fix column names
+Replace column names with good variables
+```{r}
+cog_colname_df = data.frame(col = colnames(cog_decode)[-1])
+
+metadt_cog = subset(read.csv("data/metadt/metadt_cog.csv"), select = c(my_colname,FieldID))
+metadt_cog$FieldID = paste("X", metadt_cog$FieldID, sep = "")
+#delete everything after hyphen 
+metadt_cog$FieldID = gsub("-.*","",metadt_cog$FieldID)
+metadt_cog$my_colname = substr(metadt_cog$my_colname,1,nchar(metadt_cog$my_colname)-1)
+metadt_cog = metadt_cog[!duplicated(metadt_cog$my_colname),]
+
+
+cog_colname_df = merge(cog_colname_df, metadt_cog, by.x = "col", by.y = "FieldID")
+
+colnames(cog_decode) <- c("eid", cog_colname_df$my_colname)
+write.csv(cog_decode,"data_out/preprocessed_cog_dt.csv", row.names = F)
+```
+
+
+#### IDP
+
+##### Decode 
+
+```{r}
+
+## import ukb data and rename variables
+rawdt.idp = read.csv("data/idp_dt.csv", na.strings=c("","NA"))
+colnames(rawdt.idp)
+
+#aggregate the columns by selecting the last results, for each 
+idp_dt_t = melt(rawdt.idp, id='eid')
+
+#order by variable to make sure I am will be replacing the latest value 
+idp_dt_t <- idp_dt_t[order(idp_dt_t$variable),] 
+
+#delete everything after period 
+idp_dt_t$variable = gsub("\\..*","",idp_dt_t$variable)
+
+#aggregate by last 
+idp_dt_t_na = na.omit(idp_dt_t)
+idp_dt_t_na = aggregate(idp_dt_t_na, by=list(idp_dt_t_na$eid,idp_dt_t_na$variable), FUN=tail, n = 1)
+
+# Curate
+idp_dt_t_na = idp_dt_t_na[c("eid", "variable", "value")]
+idp_dt_t_na$variable = as.factor(idp_dt_t_na$variable)
+
+# put it back straight 
+idp_cur = cast(idp_dt_t_na, eid~variable)
+
+```
+
+##### Fix column names
+Replace column names with good variables
+```{r}
+idp_colname_df = data.frame(col = colnames(idp_cur)[-1])
+
+metadt_idp = subset(read.csv("data/metadt/metadt_idp.csv"), select = c(my_colname,FieldID))
+metadt_idp$FieldID = paste("X", metadt_idp$FieldID, sep = "")
+#delete everything after hyphen 
+metadt_idp$FieldID = gsub("-.*","",metadt_idp$FieldID)
+metadt_idp$my_colname = substr(metadt_idp$my_colname,1,nchar(metadt_idp$my_colname)-1)
+metadt_idp = metadt_idp[!duplicated(metadt_idp$my_colname),]
+
+
+idp_colname_df = merge(idp_colname_df, metadt_idp, by.x = "col", by.y = "FieldID")
+
+colnames(idp_cur) <- c("eid", idp_colname_df$my_colname)
+write.csv(idp_cur,"data_out/preprocessed_idp_dt.csv", row.names = F)
+```
+
+
+
+## Curate variables
+
+```{r}
+ukb_decode = read.csv("data_out/preprocessed_UKB_dt.csv")
+idp_cur = read.csv("data_out/preprocessed_idp_dt.csv")
+cog_decode = read.csv("data_out/preprocessed_cog_dt.csv")
+ukb_pheno = merge(ukb_decode, cog_decode, by = "eid", all.x = T)
+ukb_pheno = merge(ukb_pheno, idp_cur, by = "eid", all.x = T)
+# folate = 6, lvl.100629
+ukb_pheno$folate = ifelse(ukb_pheno$folate == 6, TRUE, FALSE)
+
+
+ukb_pheno.curate = ukb_pheno
+
+ukb_pheno.curate = ukb_pheno.curate %>%
+  mutate(ad_diag = c("FALSE", "TRUE")[(!is.na(ad_date) | 
+                                     !is.na(ad) 
+                                     )+1] )
+
+# curate age -> first 4 variables of TGA assay date
+ukb_pheno.curate$age <- substr(ukb_pheno.curate$date_assessed,1,4)
+ukb_pheno.curate$age <- as.numeric(ukb_pheno.curate$age) - as.numeric(ukb_pheno.curate$birth)
+
+#create whr
+ukb_pheno.curate$whr = as.numeric(ukb_pheno.curate$waist) / as.numeric(ukb_pheno.curate$hip)
+
+#normalise blood markers by protein level
+ukb_pheno.curate$CRP_protein = as.numeric(ukb_pheno.curate$crp)/as.numeric(ukb_pheno.curate$tot_p)
+ukb_pheno.curate$VitaD_protein = as.numeric(ukb_pheno.curate$vitamind)/as.numeric(ukb_pheno.curate$tot_p)
+
+#make the rest into numeric
+ukb_pheno.curate$townsend = as.numeric(ukb_pheno.curate$townsend) 
+ukb_pheno.curate$crp=as.numeric(ukb_pheno.curate$crp)
+ukb_pheno.curate$vitamind=as.numeric(ukb_pheno.curate$vitamind)
+ukb_pheno.curate$tot_p=as.numeric(ukb_pheno.curate$tot_p)
+ukb_pheno.curate$sleep_dur = as.numeric(ukb_pheno.curate$sleep_dur)
+ukb_pheno.curate$waist=as.numeric(ukb_pheno.curate$waist)
+ukb_pheno.curate$hip=as.numeric(ukb_pheno.curate$hip)
+
+ukb_pheno.curate$date_assessed = as.Date(ukb_pheno.curate$date_assessed)
+
+ukb_pheno.curate$birth = as.numeric(ukb_pheno.curate$birth)
+
+ukb_pheno.curate$bpdias = as.numeric(ukb_pheno.curate$bpdias)
+ukb_pheno.curate$bpsys = as.numeric(ukb_pheno.curate$bpsys)
+
+ukb_pheno.curate = ukb_pheno.curate[ , !(names(ukb_pheno.curate) %in% c("crp", "tot_p", "vitamind","birth","ad_date",   "ad", "waist", "hip", "date_assessed"))]
+
+write.csv(ukb_pheno.curate, "data_out/ukb_pheno_curated.csv", row.names = F)
+```
+
+### Recode/simplify selected variabels 
+
+```{r}
+ukb_pheno.curate = read.csv("data_out/ukb_pheno_curated.csv")
+ukb_pheno.curate$uni = FALSE
+ukb_pheno.curate$uni[ukb_pheno.curate$edu_level == "College or University degree"] <- TRUE
+ukb_pheno.curate$nodegree = FALSE
+ukb_pheno.curate$nodegree[ukb_pheno.curate$edu_level == "None of the above"] <- TRUE
+ukb_pheno.curate$british = FALSE 
+ukb_pheno.curate$british[ukb_pheno.curate$ethnicity == "British"] <- TRUE
+
+ukb_pheno.curate$wake_sim = as.numeric(mgsub::mgsub(string = ukb_pheno.curate$wake, pattern = c("Prefer not to answer","Do not know","Not at all easy","Not very easy","Fairly easy","Very easy"),
+                               replacement = c(NA,NA,0,1,2,3)))
+
+ukb_pheno.curate$nap_sim = as.numeric(mgsub::mgsub(string = ukb_pheno.curate$nap, pattern = c("Prefer not to answer","Never/rarely","Sometimes","Usually"),
+                               replacement = c(NA,0,1,2)))
+
+ukb_pheno.curate$insomnia_sim = as.numeric(mgsub::mgsub(string = ukb_pheno.curate$insomnia, pattern = c("Prefer not to answer","Never/rarely","Sometimes","Usually"),
+                               replacement = c(NA,0,1,2)))
+
+
+ukb_pheno.curate$daysleep_sim = as.numeric(mgsub::mgsub(string = ukb_pheno.curate$daysleep, pattern = c("Prefer not to answer","Do not know","Never/rarely","Sometimes","Often","All of the time"),
+                               replacement = c(NA,NA,0,1,2,3)))
+
+
+ukb_pheno.curate$highBP[ukb_pheno.curate$bpdias>=90 | ukb_pheno.curate$bpsys>=140] <-TRUE
+ukb_pheno.curate$highBP[ukb_pheno.curate$bpdias<90 | ukb_pheno.curate$bpsys<140] <-FALSE
+
+write.csv(ukb_pheno.curate, "data_out/ukb_pheno.csv", row.names = F)
+```
+
+
+## Descriptive statistics: phenotypes
+```{r}
+ukb_pheno = read.csv("data_out/ukb_pheno.csv")
+
+#delete first column -> eid
+ukb_descript_stats <- arsenal::tableby(ad_diag ~ ., data = ukb_pheno[,2:ncol(ukb_pheno)])
+arsenal::write2word(ukb_descript_stats, "ukb_pheno_descriptStats.doc",
+  keep.md = TRUE,
+  quiet = TRUE, # passed to rmarkdown::render
+  title = "Descriptive statistics of the UK Biobank subcohort analysed") # passed to summary.tableby
+```
+
+## Curate SNP data 
+
+### Load data
+
+```{r message=FALSE}
+library(BGData)
+library(BGLR)
+library(data.table) #requires brew update && brew install llvm
+library(qqman)
+
+#Load each chromosome as a BEDMatrix object and link them by columns to a ColumnLinkedMatrix object:
+genoPath = "/home/yizhouyu/raid/UKB_dt_18-4-2020/"
+full_ukb_gen_dt <- as.ColumnLinkedMatrix(lapply(c(1:22), function(chrom) {
+  BEDMatrix(paste0(genoPath, "ukb_cal_chr", chrom,"_v2.bed"))
+}))
+rownames(full_ukb_gen_dt) <- sapply(strsplit(rownames(full_ukb_gen_dt), "_"), `[`, 1) 
+# convert names from FID_II D to eid
+
+#Combine genotypes and phenotypes into a BGData object
+full_pheno_geno_dt <- as.BGData(full_ukb_gen_dt, alternatePhenotypeFile = "data_out/ukb_pheno_curated.csv")
+
+allSamples <- rownames(full_pheno_geno_dt@geno)
+#488377 samples
+allVariants <- colnames(full_pheno_geno_dt@geno)
+#784256 variants
+save(full_pheno_geno_dt, file = "data_out/full_pheno_geno_dt.RData")
+```
+
+### Download MTHFD2L SNPs
+
+All MTHFD2 snps were obtained from https://www.ncbi.nlm.nih.gov/snp, using the search code MTHFD2[Gene Name] AND "Homo sapiens"[Organism]
+<br>
+The search weblink is: 
+https://www.ncbi.nlm.nih.gov/snp/?term=MTHFD2+%5BGene+Name%5D+AND+%22Homo+sapiens%22%5BOrganism%5D
+
+A total of 8164 search results were obtained
+
+```{r}
+snp_dt = read.csv("data/mthfd2l_snp_result.txt", sep = "\t")
+snp_dt$snp = paste0("rs",snp_dt$snp_id)
+length(snp_dt$snp)
+length(unique(snp_dt$snp))
+```
+
+
+
+
+```{r}
+mthfd2_snp = unique(snp_dt$snp)
+
+# check all variants
+ukbSNP_without_variant = gsub("_.*","",allVariants)
+mthfd2_snp_intersect = intersect(mthfd2_snp,ukbSNP_without_variant)
+
+#get the index values 
+mthfd2_snp_intersect_df = data.frame(row_num = 1:length(allVariants), 
+                                          raw_var = allVariants, 
+                                          SNP_only = ukbSNP_without_variant, 
+                                          selected_var = ukbSNP_without_variant %in% mthfd2_snp_intersect)
+
+mthfd2_snp_intersect_df = subset(mthfd2_snp_intersect_df, selected_var == TRUE)
+
+snp_dt = merge(snp_dt[!duplicated(snp_dt$snp),], mthfd2_snp_intersect_df,
+                              by.x="snp", by.y = "SNP_only")
+
+write.csv(snp_dt,"data_out/mthfd2l_snp_in_ukbdt.csv", row.names = FALSE)
+BGD_mthfd2_snp = full_pheno_geno_dt@geno[,na.omit(snp_dt$raw_var)]
+
+save(BGD_mthfd2_snp, file = "data_out/BGD_mthfd2l_snp_dt.RData")
+```
+
+
+### Correlation plot of MTHFD2L
+
+```{r}
+BGD_mthfd2_snp_cor <- cor(na.omit(BGD_mthfd2_snp))
+corrplot::corrplot(BGD_mthfd2_snp_cor, type = "upper", order = "hclust", 
+         tl.col = "black", tl.srt = 45)
+
+```
+
+```{r}
+
+library(Hmisc)
+BGD_mthfd2_snp_cor2<-rcorr(as.matrix(BGD_mthfd2_snp_cor))
+
+flattenCorrMatrix <- function(cormat, pmat) {
+  ut <- upper.tri(cormat)
+  data.frame(
+    row = rownames(cormat)[row(cormat)[ut]],
+    column = rownames(cormat)[col(cormat)[ut]],
+    cor  =(cormat)[ut],
+    p = pmat[ut]
+    )
+}
+
+BGD_mthfd2_snp_cor_stats = flattenCorrMatrix(BGD_mthfd2_snp_cor2$r, BGD_mthfd2_snp_cor2$P)
+BGD_mthfd2_snp_cor_stats
+
+```
+
+```{r}
+BGD_mthfd2_snp_cor_stats_exclude = subset(BGD_mthfd2_snp_cor_stats, cor >= 0.99 | cor <= -0.99)
+BGD_mthfd2_snp_cor_stats_exclude
+```
+
+## Generate the base model for AD 
+
+Base model & step AIC and boruta 
+
+```{r}
+ukb_pheno = read.csv("data_out/ukb_pheno.csv")
+
+ukb_pheno_base_glm = subset(ukb_pheno, select = c(ad_diag, age, whr, townsend, british, sex, uni, nodegree,highBP, CRP_protein, VitaD_protein))
+ukb_pheno_base_glm = na.omit(ukb_pheno_base_glm)
+base_glm = glm(formula = ad_diag ~ age + whr + townsend + british + sex + uni +nodegree+ highBP + CRP_protein + VitaD_protein,family="binomial", data = ukb_pheno_base_glm)
+summary(base_glm)
+```
+
+### StepAIC 
+
+```{r}
+MASS::stepAIC(base_glm)
+```
+
+### Boruta
+
+```{r eval=FALSE}
+base_glm.boruta <- Boruta::Boruta(ad_diag ~ age + whr + townsend + british + sex + uni + highBP + nodegree + CRP_protein + VitaD_protein, data = ukb_pheno_base_glm)
+Boruta::getSelectedAttributes(base_glm.boruta)
+```
+
+### Final AD formula
+
+```{r}
+ad_formula = "ad_diag ~ age + townsend + sex + uni + nodegree + VitaD_protein + "
+```
+
+
+## Make a polygenic risk score & validation
+
+### AD SNPs from GWAS
+```{r}
+AD_snp = read.csv("data/AD_snp.csv")
+
+# check all variants
+AD_intersect = intersect(unique(AD_snp$snp),ukbSNP_without_variant)
+
+#get the index values 
+AD_intersect_intersect_i_df = data.frame(row_num = 1:length(allVariants), 
+                                          raw_var = allVariants, 
+                                          SNP_only = ukbSNP_without_variant, 
+                                          selected_var = ukbSNP_without_variant %in% AD_intersect)
+
+AD_intersect_intersect_i_df = subset(AD_intersect_intersect_i_df, selected_var == TRUE)
+
+AD_snp = merge(AD_snp, AD_intersect_intersect_i_df,
+                              by.x="snp", by.y = "SNP_only")
+
+write.csv(AD_snp,"data_out/AD_snp_in_ukbdt.csv", row.names = FALSE)
+
+BGD_AD_variants = full_pheno_geno_dt@geno[,na.omit(AD_snp$raw_var)]
+
+save(BGD_AD_variants, file = "data_out/AD_variants_dt.RData")
+```
+
+
+### AD PRS generation
+
+Validation with all the above variables
+
+```{r}
+BGD_AD_variants_df = as.data.frame(BGD_AD_variants)
+BGD_AD_variants_df$eid = rownames(BGD_AD_variants_df)
+ukb_pheno_PRS = merge(ukb_pheno, BGD_AD_variants_df, by = "eid", all.x = T)
+```
+
+```{r}
+snp_list = colnames(BGD_AD_variants)
+
+glm_df = data.frame()
+library(MASS)
+
+for (i in 1:length(snp_list)){
+  formula = paste0(ad_formula,snp_list[i])
+  #print(formula_whr)
+  glm = glm(formula = formula, family="binomial", data = ukb_pheno_PRS)
+  snp.name = snp_list[i]
+  
+  coef = as.data.frame(summary(glm)$coefficients)$Estimate[length(as.data.frame(summary(glm)$coefficients)$Estimate)]
+  
+  CI025 = as.data.frame(confint.default(glm)[nrow(confint.default(glm)),1])
+  CI975 = as.data.frame(confint.default(glm)[nrow(confint.default(glm)),2])
+  
+  p = as.data.frame(summary(glm)$coefficients)$`Pr(>|z|)`[length(as.data.frame(summary(glm)$coefficients)$`Pr(>|z|)`)]
+  
+  glm_df = rbind(glm_df, unname(c(snp.name,exp(coef),exp(CI025),exp(CI975),p)))
+}
+
+colnames(glm_df) <- c("snp","OR","CI025","CI975","p")
+glm_df$fdr = p.adjust(glm_df$p, method = "BH")
+
+write.csv(glm_df, "data_out/AD_PRS_SNPs_whole_cohort.csv", row.names = F)
+```
+
+
+
+```{r}
+glm_df_PRS = glm_df
+
+glm_df_PRS_sig = subset(glm_df_PRS, p < 0.05)
+
+glm_df_PRS_sig$multiplier = log(as.numeric(glm_df_PRS_sig$OR))
+```
+
+```{r}
+AD_variants_PRS_df = BGD_AD_variants_df
+AD_variants_PRS_df = subset(AD_variants_PRS_df, select = c("eid",glm_df_PRS_sig$snp))
+
+for (snp_AD_prs in 1:nrow(glm_df_PRS_sig)){
+  snp_AD_prs_id = glm_df_PRS_sig$snp[snp_AD_prs]
+  multiplier = glm_df_PRS_sig$multiplier[snp_AD_prs]
+  AD_variants_PRS_df[,snp_AD_prs_id] = AD_variants_PRS_df[,snp_AD_prs_id] * multiplier
+}
+
+
+AD_variants_PRS_df$ad_prs = rowSums( AD_variants_PRS_df[,2:ncol(AD_variants_PRS_df)] )
+
+AD_variants_PRS = subset(AD_variants_PRS_df, select = c(eid,ad_prs))
+
+write.csv(AD_variants_PRS, "data_out/AD_variants_PRS.csv", row.names = F)
+```
+
+AD PRS validation model
+```{r results = "asis"}
+AD_variants_PRS_validation = merge(ukb_pheno, AD_variants_PRS, by="eid")
+
+glm_prs_validation = glm(formula = paste0(ad_formula, "ad_prs"),family="binomial", data = AD_variants_PRS_validation)
+
+stargazer::stargazer(glm_prs_validation,type="html",out = "fig_out/AD_PRS_validation_model_full.html",
+          dep.var.labels="AD diagnosis or not",
+          single.row=TRUE)
+
+```
+
+```{r}
+library(gtsummary)
+glm_prs_validation %>% 
+  tbl_regression(exp = TRUE,
+                            pvalue_fun = ~style_pvalue(.x, digits = 2)) 
+```
+
+Here, I have a polygenic risk score that is associated with an increased risk of AD.
+
+# Models
+
+## AD risk ~ MTHFD2L
+
+### Whole population models
+
+```{r}
+BGD_mthfd2_snp_df = as.data.frame(BGD_mthfd2_snp)
+BGD_mthfd2_snp_df$eid = row.names(BGD_mthfd2_snp_df)
+ukb_pheno_mthfd2 = merge(ukb_pheno, BGD_mthfd2_snp_df, by = "eid")
+
+write.csv(ukb_pheno_mthfd2, "data_out/ukb_pheno_mthfd2.csv", row.names = F)
+```
+
+## AD risk ~ MTHFD2L - descriptive stats 
+
+```{r}
+ukb_descript_stats <- arsenal::tableby(ad_diag ~ ., data = ukb_pheno_mthfd2[,2:ncol(ukb_pheno_mthfd2)])
+arsenal::write2word(ukb_descript_stats, "ukb_pheno_descriptStats_genome.doc",
+  keep.md = TRUE,
+  quiet = TRUE, # passed to rmarkdown::render
+  title = "Descriptive statistics of the UK Biobank subcohort analysed") # passed to summary.tableby
+```
+
+
+```{r}
+snp_list = colnames(BGD_mthfd2_snp)
+snp_list = snp_list[!snp_list %in% BGD_mthfd2_snp_cor_stats_exclude$row]
+# exclude highly correlated SNPS (BGD_mthfd2_snp_cor_stats_exclude$row)
+glm_df = data.frame()
+library(MASS)
+
+for (i in 1:length(snp_list)){
+  formula = paste0(ad_formula,snp_list[i])
+  #print(formula_whr)
+  glm = glm(formula = formula,family="binomial", data = ukb_pheno_mthfd2)
+  snp.name = snp_list[i]
+  
+  coef = as.data.frame(summary(glm)$coefficients)$Estimate[length(as.data.frame(summary(glm)$coefficients)$Estimate)]
+  
+  CI025 = as.data.frame(confint.default(glm)[nrow(confint.default(glm)),1])
+  CI975 = as.data.frame(confint.default(glm)[nrow(confint.default(glm)),2])
+  
+  p = as.data.frame(summary(glm)$coefficients)$`Pr(>|z|)`[length(as.data.frame(summary(glm)$coefficients)$`Pr(>|z|)`)]
+  
+  glm_df = rbind(glm_df, unname(c(snp.name,exp(coef),exp(CI025),exp(CI975),p)))
+}
+
+colnames(glm_df) <- c("snp","OR","CI025","CI975","p")
+glm_df$fdr = p.adjust(glm_df$p, method = "BH")
+
+glm_df_mthfd2l_wholeCohort = glm_df
+
+write.csv(glm_df_mthfd2l_wholeCohort, "data_out/mthfd2_SNPs_whole_cohort.csv", row.names = F)
+```
+
+Note: here, I will use exp(confint.default(glm)) to generate the Wald confidence intervals because this is less computationally intensive. The better method would be to calculate the profile-likelihood limits, which is more important and achievable if the sample size is small.
+
+### High polygenic risk models
+
+Model all SNPs
+
+Note: I excluded the SNP rs77369766_A of MTHFD2L because it did not contain sufficient participants
+```{r}
+ukb_pheno_mthfd2_prs = merge(ukb_pheno_mthfd2, AD_variants_PRS, by = "eid", all.x = T)
+ukb_pheno_mthfd2_prs_highPRS = subset(ukb_pheno_mthfd2_prs, ad_prs > mean(na.omit(ukb_pheno_mthfd2_prs$ad_prs)))
+
+snp_list = colnames(BGD_mthfd2_snp)
+snp_list = snp_list[!snp_list %in% BGD_mthfd2_snp_cor_stats_exclude$row]
+# exclude highly correlated SNPS (BGD_mthfd2_snp_cor_stats_exclude$row)
+snp_list = snp_list[snp_list != "rs77369766_A"]
+glm_df = data.frame()
+library(MASS)
+
+for (i in 1:length(snp_list)){
+  formula = paste0(ad_formula,snp_list[i])
+  #print(formula_whr)
+  glm = glm(formula = formula,family="binomial", data = ukb_pheno_mthfd2_prs_highPRS)
+  snp.name = snp_list[i]
+  
+  coef = as.data.frame(summary(glm)$coefficients)$Estimate[length(as.data.frame(summary(glm)$coefficients)$Estimate)]
+  
+  CI025 = as.data.frame(confint.default(glm)[nrow(confint.default(glm)),1])
+  CI975 = as.data.frame(confint.default(glm)[nrow(confint.default(glm)),2])
+  
+  p = as.data.frame(summary(glm)$coefficients)$`Pr(>|z|)`[length(as.data.frame(summary(glm)$coefficients)$`Pr(>|z|)`)]
+  
+  glm_df = rbind(glm_df, unname(c(snp.name,exp(coef),exp(CI025),exp(CI975),p)))
+}
+
+colnames(glm_df) <- c("snp","OR","CI025","CI975","p")
+glm_df$fdr = p.adjust(glm_df$p, method = "BH")
+
+glm_df_mthfd2l_highPRS = glm_df
+
+write.csv(glm_df_mthfd2l_highPRS, "data_out/mthfd2_SNPs_highPRS.csv", row.names = F)
+
+```
+
+### Combined high and whole cohort for AD risk ~ MTHFD2L
+
+```{r}
+colnames(glm_df_mthfd2l_wholeCohort) <- c("snp","OR_whole","CI025_whole","CI975_whole","p_whole", "fdr_whole")
+
+colnames(glm_df_mthfd2l_highPRS) <- c("snp","OR_prs","CI025_prs","CI975_prs","p_prs", "fdr_prs")
+
+glm_df_mthfd2l_anaysis = merge(glm_df_mthfd2l_wholeCohort,
+                               glm_df_mthfd2l_highPRS, by = "snp", all.x = T)
+
+glm_df_mthfd2l_anaysis
+```
+
+#### Quality control for AD risk ~ MTHFD2L
+
+Rule: 
+if abs(ln(OR_whole)) < abs(ln(OR_highPRS)), then keep, otherwise discard
+```{r}
+glm_df_mthfd2l_anaysis_target_subset = subset(glm_df_mthfd2l_anaysis, 
+                                              p_whole < 0.06)
+glm_df_mthfd2l_anaysis_target_subset$curation = ifelse(
+  abs(log(glm_df_mthfd2l_anaysis_target_subset$OR_whole)) < abs(log(glm_df_mthfd2l_anaysis_target_subset$OR_prs)),
+  TRUE,
+  FALSE
+)
+```
+
+#### Plot significant SNPS for AD risk
+```{r}
+ggplot(glm_df_mthfd2l_anaysis_target_subset[,1:5], 
+       aes(x=reorder(snp, OR_whole), y=OR_whole)) + 
+    geom_errorbar(aes(ymin=CI025_whole, ymax=CI975_whole),
+                  width=0,                    # Width of the error bars
+                  position=position_dodge(.9), color = "#939598", size = 1.5) +
+      geom_point(shape=21, size = 2, color = '#ED2024', fill = "#ED2024") +
+  theme_classic() + 
+  geom_hline(yintercept = 1, linetype="dotted") +
+  coord_flip()+ylab("Odds ratios") + 
+  xlab("") + theme(axis.ticks.y = element_blank()) + theme(axis.text.x = element_text(colour = "#231F20"),
+        axis.text.y = element_text(colour = "#231F20"))
+ggsave('fig_out/glm_df_mthfd2l_SNP_anaysis_sig_only.pdf', width = 6, height = 3)
+
+
+```
+
+Add the high PRS as well 
+
+```{r}
+glm_df_mthfd2l_wholeCohort_plot2 = glm_df_mthfd2l_wholeCohort
+glm_df_mthfd2l_wholeCohort_plot2$cohort = "whole"
+
+glm_df_mthfd2l_highPRS_plot2 = glm_df_mthfd2l_highPRS
+glm_df_mthfd2l_highPRS_plot2$cohort = "highPRS"
+
+colnames(glm_df_mthfd2l_wholeCohort_plot2) <- c("snp","OR","CI025","CI975","p", "fdr", "cohort")
+
+colnames(glm_df_mthfd2l_highPRS_plot2) <- c("snp","OR","CI025","CI975","p", "fdr", "cohort")
+
+glm_df_mthfd2l_anaysis_plot2 = rbind(glm_df_mthfd2l_wholeCohort_plot2,
+                               glm_df_mthfd2l_highPRS_plot2)
+
+glm_df_mthfd2l_anaysis_plot2
+```
+```{r}
+glm_df_mthfd2l_anaysis_plot2_sig = glm_df_mthfd2l_anaysis_plot2[glm_df_mthfd2l_anaysis_plot2$snp %in% subset(glm_df_mthfd2l_anaysis_target_subset,curation == TRUE)$snp, ]
+
+
+ggplot(glm_df_mthfd2l_anaysis_plot2_sig, 
+       aes(x=cohort, y=OR)) + 
+    geom_errorbar(aes(ymin=CI025, ymax=CI975),
+                  width=0,                    # Width of the error bars
+                  position=position_dodge(.9), color = "#939598", size = 1.5) +
+      geom_point(shape=21, size = 2, color = '#ED2024', fill = "#ED2024") +
+  theme_classic() + 
+  geom_hline(yintercept = 1, linetype="dotted") +
+  coord_flip()+ylab("Odds ratios") + 
+  xlab("") + theme(axis.ticks.y = element_blank()) + theme(axis.text.x = element_text(colour = "#231F20"),
+        axis.text.y = element_text(colour = "#231F20")) + 
+  facet_grid(rows = vars(snp))
+ggsave('fig_out/glm_df_mthfd2l_SNP_anaysis_sig_only_curatedSNPs.pdf', width = 4, height = 3)
+```
+
+Notes: 
+
+SRMR: acceptable range for the SRMR index is between 0 and 0.08, see Hu and Bentler (1999).
+RMSEA: RMSEA values less than 0.05 are good, values between 0.05 and 0.08 are acceptable
+CFI: CFI value > 0.90 was considered to indicate acceptable model fit
+
+```{r}
+library(lavaan)
+
+sem_mthfd2l_model <- '
+  # mthfd2l_snp
+  mthfd2l_snp =~ rs115534052_A + rs72654804_T + rs78708399_A
+  # Regression
+  ad_diag ~ age + townsend + sex + uni + nodegree + VitaD_protein + mthfd2l_snp
+  '
+sem_mthfd2l_model_fit = sem(sem_mthfd2l_model, data = ukb_pheno_mthfd2)
+
+fitMeasures(sem_mthfd2l_model_fit,
+            c("cfi","rmsea","srmr"))
+summary(sem_mthfd2l_model_fit, standardized = TRUE)
+```
+
+#### Analysis of gene expression levels using GTEX
+
+##### Download gene expression data from gtexportal 
+
+In Chrome, use the "..." menu, then More Tools, then Developer Tools.  Then select the Network tab.  Once that is open, click on the Violin Plot link on the GTEx Portal gene page.  You will then see the URL used to retrieve the data:
+https://gtexportal.org/rest/v1/association/dyneqtl?variantId=chr4_74219929_C_T_b38&gencodeId=ENSG00000163738.18&tissueSiteDetailId=Brain_Cortex
+
+
+Get the data of these SNPs:
+
+rs115534052 - yes
+rs572987 - yes
+rs61744957 - no data
+rs72654804 - no data
+rs78708399 - no data
+
+##### Read GTEX JSON data 
+```{r}
+rs115534052_gtex = rjson::fromJSON(file="data/gtex_snp_dt/rs115534052.json")
+rs572987_gtex = rjson::fromJSON(file="data/gtex_snp_dt/rs572987.json")
+
+```
+
+##### Plot GTEX data
+
+```{r}
+rs115534052_gtex_df = data.frame(genotypes = rs115534052_gtex$genotypes,
+                                 normExpression = rs115534052_gtex$data)
+rs572987_gtex_df = data.frame(genotypes = rs572987_gtex$genotypes,
+                                 normExpression = rs572987_gtex$data)
+```
+
+```{r}
+ggplot(rs115534052_gtex_df, aes(x = as.factor(genotypes), y = normExpression, color = as.factor(genotypes))) + 
+  geom_violin(cex = 1, alpha = 0.5) +
+  geom_boxplot(cex =1, width=0.25,outlier.shape = NA,coef = 0) +
+  annotate("text", x = 3, y=2, label = "Normalised effect size = -0.43, \n p = 0.000010 \n 0 = AA 1 = AG 2 = GG \n Nerve - Tibial") + 
+  scale_color_manual(values=c("#939598", "#ED2024","#ED2024")) + 
+  theme(axis.ticks.y = element_blank(),
+        axis.ticks.x = element_blank()) + theme_classic() + 
+  theme(axis.text.x = element_text(colour = "#231F20"),
+        axis.text.y = element_text(colour = "#231F20"))
+ggsave('fig_out/rs115534052_gtex_expression.pdf', width = 6, height = 4)
+
+```
+
+```{r}
+library(ggbeeswarm)
+ggplot(rs572987_gtex_df, aes(x = as.factor(genotypes), y = normExpression,color = as.factor(genotypes))) + 
+  geom_violin(cex = 1, alpha = 0.5) +
+  geom_boxplot(cex =1, width=0.25,outlier.shape = NA,coef = 0) +
+  annotate("text", x = 1, y=2, label = "Normalised effect size = -0.90, \n p = 0.000011 \n 2 = TT 1 = CT \n Brain Cortex") + 
+  scale_color_manual(values=c("#939598","#ED2024")) + 
+  theme(axis.ticks.y = element_blank(),
+        axis.ticks.x = element_blank())+ theme_classic() + 
+  theme(axis.text.x = element_text(colour = "#231F20"),
+        axis.text.y = element_text(colour = "#231F20"))
+ggsave('fig_out/rs572987_gtex_expression.pdf', width = 6, height = 4)
+```
+
+
+```{r}
+ukb_pheno_mthfd2_prs_highPRS = subset(ukb_pheno_mthfd2_prs,
+                                      ad_prs > mean(ukb_pheno_mthfd2_prs$ad_prs))
+hippGre_validation_mod = lm(formula = right_hippGre ~ age + townsend + sex + uni + nodegree + VitaD_protein + ad_prs, data = ukb_pheno_mthfd2_prs_highPRS)
+summary(hippGre_validation_mod)
+```
+
+
+### MTHFD2L AD-significant SNPs and brain + cognitive features 
+
+#### MTHFD2L & hippocampal grey matter 
+
+##### Right hippocampal grey matter 
+
+```{r}
+write.csv(ukb_pheno_mthfd2_prs,"data_out/ukb_pheno_mthfd2_prs.csv",
+          row.names = F)
+```
+
+```{r}
+ukb_pheno_mthfd2_prs_highPRS = subset(ukb_pheno_mthfd2_prs,
+                                      ad_prs > mean(ukb_pheno_mthfd2_prs$ad_prs))
+
+right_hippGre_formula = "right_hippGre ~ age + townsend + sex + uni + nodegree + VitaD_protein +"
+
+mthfd2l_anaysis_sig_snp = glm_df_mthfd2l_anaysis_target_subset$snp
+
+glm_df = data.frame()
+
+for (i in 1:length(mthfd2l_anaysis_sig_snp)){
+  formula = paste0(right_hippGre_formula,mthfd2l_anaysis_sig_snp[i])
+  #print(formula_whr)
+  glm = lm(formula = formula, data = ukb_pheno_mthfd2_prs_highPRS)
+  snp.name = mthfd2l_anaysis_sig_snp[i]
+  
+  coef = as.data.frame(summary(glm)$coefficients)$Estimate[length(as.data.frame(summary(glm)$coefficients)$Estimate)]
+  
+  CI025 = as.data.frame(confint.default(glm)[nrow(confint.default(glm)),1])
+  CI975 = as.data.frame(confint.default(glm)[nrow(confint.default(glm)),2])
+  
+  p = as.data.frame(summary(glm)$coefficients)$`Pr(>|t|)`[length(as.data.frame(summary(glm)$coefficients)$`Pr(>|t|)`)]
+  
+  glm_df = rbind(glm_df, unname(c(snp.name,coef,CI025,CI975,p)))
+}
+
+colnames(glm_df) <- c("snp","Beta","CI025","CI975","p")
+glm_df$fdr = p.adjust(glm_df$p, method = "BH")
+
+
+write.csv(glm_df, "data_out/right_hippGre_mthfd2_SNPs_highPRS.csv", row.names = F)
+
+```
+
+##### Left hippocampal grey matter 
+
+```{r}
+
+
+left_hippGre_formula = "left_hippGre ~ age + townsend + sex + uni + nodegree + VitaD_protein +"
+
+mthfd2l_anaysis_sig_snp = glm_df_mthfd2l_anaysis_target_subset$snp
+
+glm_df = data.frame()
+
+for (i in 1:length(mthfd2l_anaysis_sig_snp)){
+  formula = paste0(left_hippGre_formula,mthfd2l_anaysis_sig_snp[i])
+  #print(formula_whr)
+  glm = lm(formula = formula, data = ukb_pheno_mthfd2_prs_highPRS)
+  snp.name = mthfd2l_anaysis_sig_snp[i]
+  
+  coef = as.data.frame(summary(glm)$coefficients)$Estimate[length(as.data.frame(summary(glm)$coefficients)$Estimate)]
+  
+  CI025 = as.data.frame(confint.default(glm)[nrow(confint.default(glm)),1])
+  CI975 = as.data.frame(confint.default(glm)[nrow(confint.default(glm)),2])
+  
+  p = as.data.frame(summary(glm)$coefficients)$`Pr(>|t|)`[length(as.data.frame(summary(glm)$coefficients)$`Pr(>|t|)`)]
+  
+  glm_df = rbind(glm_df, unname(c(snp.name,coef,CI025,CI975,p)))
+}
+
+colnames(glm_df) <- c("snp","Beta","CI025","CI975","p")
+glm_df$fdr = p.adjust(glm_df$p, method = "BH")
+
+
+write.csv(glm_df, "data_out/right_hippGre_mthfd2_SNPs_highPRS.csv", row.names = F)
+
+```
+
+##### Whole hippocampal grey matter 
+
+```{r}
+whole_hippGre_formula = "left_hippGre + right_hippGre ~ age + townsend + sex + uni + nodegree + VitaD_protein + "
+
+mthfd2l_anaysis_sig_snp = glm_df_mthfd2l_anaysis_target_subset$snp
+
+glm_df = data.frame()
+
+for (i in 1:length(mthfd2l_anaysis_sig_snp)){
+  formula = paste0(whole_hippGre_formula,mthfd2l_anaysis_sig_snp[i])
+  #print(formula_whr)
+  glm = lm(formula = formula, data = ukb_pheno_mthfd2_prs_highPRS)
+  snp.name = mthfd2l_anaysis_sig_snp[i]
+  
+  coef = as.data.frame(summary(glm)$coefficients)$Estimate[length(as.data.frame(summary(glm)$coefficients)$Estimate)]
+  
+  CI025 = as.data.frame(confint.default(glm)[nrow(confint.default(glm)),1])
+  CI975 = as.data.frame(confint.default(glm)[nrow(confint.default(glm)),2])
+  
+  p = as.data.frame(summary(glm)$coefficients)$`Pr(>|t|)`[length(as.data.frame(summary(glm)$coefficients)$`Pr(>|t|)`)]
+  
+  glm_df = rbind(glm_df, unname(c(snp.name,coef,CI025,CI975,p)))
+}
+
+colnames(glm_df) <- c("snp","Beta","CI025","CI975","p")
+glm_df$fdr = p.adjust(glm_df$p, method = "BH")
+
+whole_hippGre_mthfd2_SNPs_highPRS = glm_df
+write.csv(whole_hippGre_mthfd2_SNPs_highPRS, "data_out/whole_hippGre_mthfd2_SNPs_highPRS.csv", row.names = F)
+
+```
+
+##### Whole hippocampal grey matter - graph
+
+Since only 1 variant is significant, I will only plot that one
+
+```{r}
+rs115534052_A_hippVol = lm(formula = left_hippGre + right_hippGre ~ age + townsend + sex + uni + nodegree + VitaD_protein + rs115534052_A, data = ukb_pheno_mthfd2_prs_highPRS)
+
+sjPlot::plot_model(rs115534052_A_hippVol, transform = NULL, sort.est = TRUE, show.values = TRUE, value.offset = .3) + theme_classic() + theme(axis.ticks.y = element_blank(),axis.text.x = element_text(colour = "#231F20"),
+        axis.text.y = element_text(colour = "#231F20"))
+ggsave('fig_out/lm_rs115534052_A_hippVol.pdf', width = 5, height = 3)
+```
+##### Whole hippocampal grey matter SEM model
+
+```{r}
+library(lavaan)
+
+sem_mthfd2l_model_hippVol <- '
+  # mthfd2l_snp
+  mthfd2l_snp =~ rs115534052_A + rs72654804_T + rs78708399_A
+  # hippvol
+  hippGre =~ left_hippGre + right_hippGre
+  
+  # Regression
+   hippGre ~ age + townsend + sex + uni + nodegree + VitaD_protein + mthfd2l_snp
+  '
+sem_mthfd2l_model_hippVol_fit = sem(sem_mthfd2l_model_hippVol, data = ukb_pheno_mthfd2_prs_highPRS)
+
+fitMeasures(sem_mthfd2l_model_hippVol_fit,
+            c("cfi","rmsea","srmr"))
+summary(sem_mthfd2l_model_hippVol_fit, standardized = TRUE)
+```
+
+```{r}
+semPlot::semPaths(sem_mthfd2l_model_hippVol_fit,
+                  layout = "tree2", whatLabels="est", style="lisrel",
+                  edge.label.color = "black",
+                  filetype = "pdf", filename = "fig_out/sem_mthfd2l_model_hippVol_fit")
+
+```
+
+
+With normalised data
+```{r}
+library(lavaan)
+library(MASS)
+ukb_pheno_mthfd2_prs_highPRS$tot_hippGre = ukb_pheno_mthfd2_prs_highPRS$left_hippGre + ukb_pheno_mthfd2_prs_highPRS$right_hippGre
+
+ukb_pheno_mthfd2_prs_highPRS_sem = ukb_pheno_mthfd2_prs_highPRS
+ukb_pheno_mthfd2_prs_highPRS_sem_numeric_i <- sapply(ukb_pheno_mthfd2_prs_highPRS_sem, is.numeric)
+ukb_pheno_mthfd2_prs_highPRS_sem[ukb_pheno_mthfd2_prs_highPRS_sem_numeric_i] <- lapply(ukb_pheno_mthfd2_prs_highPRS_sem[ukb_pheno_mthfd2_prs_highPRS_sem_numeric_i], scale)
+
+
+sem_mthfd2l_model_hippVol_scale <- '
+  # mthfd2l_snp
+  mthfd2l_snp =~ rs115534052_A + rs72654804_T + rs78708399_A
+  # hippvol
+  hippGre =~ left_hippGre + right_hippGre
+  
+  # Regression
+   hippGre ~ age + townsend + sex + uni + nodegree + VitaD_protein + mthfd2l_snp
+  '
+sem_mthfd2l_model_hippVol_scale_fit = sem(sem_mthfd2l_model_hippVol_scale, data = ukb_pheno_mthfd2_prs_highPRS_sem)
+
+fitMeasures(sem_mthfd2l_model_hippVol_scale_fit,
+            c("cfi","rmsea","srmr"))
+summary(sem_mthfd2l_model_hippVol_scale_fit, standardized = TRUE)
+```
+
+#### MTHFD2L & cognition
+
+This is problematic because 
+
+##### Validate that AD is assocaited with worse cognitive performance
+
+```{r}
+cog_dt_metadt = read.csv("data/metadt/metadt_cog.csv")
+
+cog_variables = substr(cog_dt_metadt$my_colname,1,nchar(cog_dt_metadt$my_colname)-1)
+cog_variables = cog_variables[!duplicated(cog_variables)]
+cog_variables
+```
+
+```{r}
+cog_AD_formula = " ~ age + townsend + sex + uni + nodegree + VitaD_protein + ad_prs"
+
+glm_df = data.frame()
+
+for (i in 1:length(cog_variables)){
+  formula = paste0(cog_variables[i], cog_AD_formula)
+  #print(formula_whr)
+  glm = lm(formula = formula, data = ukb_pheno_mthfd2_prs)
+  snp.name = cog_variables[i]
+  
+  coef = as.data.frame(summary(glm)$coefficients)$Estimate[length(as.data.frame(summary(glm)$coefficients)$Estimate)]
+  
+  CI025 = as.data.frame(confint.default(glm)[nrow(confint.default(glm)),1])
+  CI975 = as.data.frame(confint.default(glm)[nrow(confint.default(glm)),2])
+  
+  p = as.data.frame(summary(glm)$coefficients)$`Pr(>|t|)`[length(as.data.frame(summary(glm)$coefficients)$`Pr(>|t|)`)]
+  
+  glm_df = rbind(glm_df, unname(c(snp.name,coef,CI025,CI975,p)))
+}
+
+colnames(glm_df) <- c("snp","Beta","CI025","CI975","p")
+glm_df$fdr = p.adjust(glm_df$p, method = "BH")
+ad_risk_cog_variables = glm_df
+ad_risk_cog_variables
+```
+
+```{r}
+ad_risk_cog_variables_sig = subset(ad_risk_cog_variables, 
+                                   p < 0.05)
+ad_risk_cog_variables_sig
+```
+
+##### Linear models 
+
+```{r}
+cog_snp_formula = " ~ age + townsend + sex + uni + nodegree + VitaD_protein + rs115534052_A"
+
+glm_df = data.frame()
+
+for (i in 1:length(cog_variables)){
+  formula = paste0(cog_variables[i], cog_snp_formula)
+  #print(formula_whr)
+  glm = lm(formula = formula, data = ukb_pheno_mthfd2_prs_highPRS)
+  snp.name = cog_variables[i]
+  
+  coef = as.data.frame(summary(glm)$coefficients)$Estimate[length(as.data.frame(summary(glm)$coefficients)$Estimate)]
+  
+  CI025 = as.data.frame(confint.default(glm)[nrow(confint.default(glm)),1])
+  CI975 = as.data.frame(confint.default(glm)[nrow(confint.default(glm)),2])
+  
+  p = as.data.frame(summary(glm)$coefficients)$`Pr(>|t|)`[length(as.data.frame(summary(glm)$coefficients)$`Pr(>|t|)`)]
+  
+  glm_df = rbind(glm_df, unname(c(snp.name,coef,CI025,CI975,p)))
+}
+
+colnames(glm_df) <- c("snp","Beta","CI025","CI975","p")
+glm_df$fdr = p.adjust(glm_df$p, method = "BH")
+glm_df
+
+#write.csv(glm_df, "data_out/cognitive_variables_mthfd2_rs115534052_A_highPRS.csv", row.names = F)
+```
+
+```{r}
+cog_snp_formula = " ~ age + townsend + sex + uni + nodegree + VitaD_protein + rs78708399_A"
+
+glm_df = data.frame()
+
+for (i in 1:length(cog_variables)){
+  formula = paste0(cog_variables[i], cog_snp_formula)
+  #print(formula_whr)
+  glm = lm(formula = formula, data = ukb_pheno_mthfd2_prs_highPRS)
+  snp.name = cog_variables[i]
+  
+  coef = as.data.frame(summary(glm)$coefficients)$Estimate[length(as.data.frame(summary(glm)$coefficients)$Estimate)]
+  
+  CI025 = as.data.frame(confint.default(glm)[nrow(confint.default(glm)),1])
+  CI975 = as.data.frame(confint.default(glm)[nrow(confint.default(glm)),2])
+  
+  p = as.data.frame(summary(glm)$coefficients)$`Pr(>|t|)`[length(as.data.frame(summary(glm)$coefficients)$`Pr(>|t|)`)]
+  
+  glm_df = rbind(glm_df, unname(c(snp.name,coef,CI025,CI975,p)))
+}
+
+colnames(glm_df) <- c("snp","Beta","CI025","CI975","p")
+glm_df$fdr = p.adjust(glm_df$p, method = "BH")
+glm_df
+
+#write.csv(glm_df, "data_out/cognitive_variables_mthfd2_rs115534052_A_highPRS.csv", row.names = F)
+```
+
+No changes found for those cognitive variables using linear models
+
+##### SEM models for cognition
+
+```{r}
+sem_cog_model_ad_prs <- '
+  # cognition
+  cognition =~ cog_symbol + cog_rt + cog_pal + cog_numeric + cog_tmta + cog_matrix
+  # Regression
+  cognition ~ age + townsend + sex + uni + nodegree + VitaD_protein + ad_prs
+  '
+sem_cog_model_ad_prs_fit = sem(sem_cog_model_ad_prs, data = ukb_pheno_mthfd2_prs)
+
+summary(sem_cog_model_ad_prs_fit, standardized = TRUE, fit.measures = TRUE)
+```
+
+```{r}
+sem_cog_model_singleSNP <- '
+  # cognition
+  cognition =~ cog_symbol + cog_rt + cog_pal + cog_numeric + cog_tmta + cog_matrix
+  # Regression
+  cognition ~ age + townsend + sex + uni + nodegree + VitaD_protein + rs115534052_A
+  '
+sem_cog_model_singleSNP_fit = sem(sem_cog_model_singleSNP, data = ukb_pheno_mthfd2_prs_highPRS_sem)
+
+summary(sem_cog_model_singleSNP_fit, standardized = TRUE, fit.measures = TRUE)
+```
+
+```{r}
+library(lavaan)
+
+sem_mthfd2l_model_cognition <- '
+  # mthfd2l_snp
+  mthfd2l_snp =~ rs115534052_A + rs72654804_T + rs78708399_A
+  # cognition
+  cognition =~ cog_symbol + cog_rt + cog_pal + cog_numeric + cog_tmta + cog_matrix
+  
+  # Regression
+  cognition ~ age + townsend + sex + uni + nodegree + VitaD_protein + mthfd2l_snp
+  '
+sem_mthfd2l_model_cognition_fit = sem(sem_mthfd2l_model_cognition, data = ukb_pheno_mthfd2_prs_highPRS_sem)
+
+fitMeasures(sem_mthfd2l_model_cognition_fit,
+            c("cfi","rmsea","srmr"))
+summary(sem_mthfd2l_model_cognition_fit, standardized = TRUE, fit.measures = TRUE)
+```
+
+
+#### MTHFD2L & sleep
+
+##### Validate that AD is assocaited with sleep
+
+Recurate the chronotype / morningness variable
+
+```{r}
+preprocessed_chronotype_dt = read.csv("data_out/preprocessed_UKB_dt.csv")
+preprocessed_chronotype_dt$morningness_sim2 = mgsub::mgsub(string = preprocessed_chronotype_dt$chronotype, pattern = c("Prefer not to answer","Do not know","Definitely a \'morning\' person","More a \'morning\' than \'evening\' person","More an \'evening\' than a \'morning\' person","Definitely an \'evening\' person"),
+                               replacement = c(NA,NA,3,2,1,0))
+preprocessed_chronotype_dt_to_merge = subset(preprocessed_chronotype_dt,
+                                             select = c(eid,morningness_sim2))
+```
+
+```{r}
+ukb_pheno_mthfd2_fixMorn = ukb_pheno_mthfd2
+ukb_pheno_mthfd2_fixMorn$morningness_sim <- NULL
+ukb_pheno_mthfd2_fixMorn = merge(ukb_pheno_mthfd2_fixMorn,
+                                 preprocessed_chronotype_dt_to_merge,
+                                 by = "eid")
+write.csv(ukb_pheno_mthfd2_fixMorn, "data_out/ukb_pheno_mthfd2_fixedMorningness.csv",row.names = F)
+```
+
+```{r}
+sleep_variables = c("wake_sim", "morningness_sim2", "nap_sim", "insomnia_sim","sleep_dur")
+
+```
+
+```{r}
+sleep_AD_formula = " ~ age + townsend + sex + uni + nodegree + VitaD_protein + ad_diag"
+
+glm_df = data.frame()
+
+for (i in 1:length(sleep_variables)){
+  formula = paste0(sleep_variables[i], sleep_AD_formula)
+  #print(formula_whr)
+  glm = lm(formula = formula, data = ukb_pheno_mthfd2_fixMorn)
+  snp.name = sleep_variables[i]
+  
+  coef = as.data.frame(summary(glm)$coefficients)$Estimate[length(as.data.frame(summary(glm)$coefficients)$Estimate)]
+  
+  CI025 = as.data.frame(confint.default(glm)[nrow(confint.default(glm)),1])
+  CI975 = as.data.frame(confint.default(glm)[nrow(confint.default(glm)),2])
+  
+  p = as.data.frame(summary(glm)$coefficients)$`Pr(>|t|)`[length(as.data.frame(summary(glm)$coefficients)$`Pr(>|t|)`)]
+  
+  glm_df = rbind(glm_df, unname(c(snp.name,coef,CI025,CI975,p)))
+}
+
+colnames(glm_df) <- c("snp","Beta","CI025","CI975","p")
+glm_df$fdr = p.adjust(glm_df$p, method = "BH")
+ad_risk_sleep_variables = glm_df
+ad_risk_sleep_variables
+```
+Note: There are no associations between chronotype (morningness) and AD risk, so I will keep using the "ukb_pheno_mthfd2" dataset, where the morniness variable has not been decoded. 
+
+Sleepiness score from Yu et al. 2021
+
+```{r}
+ukb_pheno_mthfd2$sleepiness = ukb_pheno_mthfd2$sleep_dur - ukb_pheno_mthfd2$insomnia_sim + ukb_pheno_mthfd2$nap_sim
+
+ad_sleepiness_model = lm(formula = sleepiness ~ age + townsend + sex + uni + nodegree + VitaD_protein + ad_diag, data = ukb_pheno_mthfd2)
+summary(ad_sleepiness_model)
+```
+
+```{r}
+library(lavaan)
+
+sem_ad_sleep_model <- '
+  # sleep
+  sleep =~ sleep_dur+ insomnia_sim
+  
+  # Regression
+  sleep ~ age + townsend + sex + uni + nodegree + VitaD_protein + ad_diag
+  '
+
+sem_ad_sleep_model_fit = sem(sem_ad_sleep_model, data = ukb_pheno_mthfd2)
+
+summary(sem_ad_sleep_model_fit, standardized = TRUE, fit.measures = TRUE)
+```
+```{r}
+lm_mthfd2l_model_sleepiness = lm(sleep_dur ~ age + townsend + sex + uni + nodegree + VitaD_protein + rs115534052_A, data = ukb_pheno_mthfd2_prs_highPRS)
+
+summary(lm_mthfd2l_model_sleepiness, standardized = TRUE, fit.measures = TRUE)
+```
+
+
+```{r}
+ukb_pheno_mthfd2_prs_highPRS$sleepiness = ukb_pheno_mthfd2_prs_highPRS$sleep_dur + ukb_pheno_mthfd2_prs_highPRS$nap_sim - ukb_pheno_mthfd2_prs_highPRS$insomnia_sim
+
+sem_mthfd2l_model_sleepiness <- '
+  # mthfd2l_snp
+  mthfd2l_snp =~ rs115534052_A + rs72654804_T + rs78708399_A
+  
+  # Regression
+  sleep_dur ~ age + townsend + sex + uni + nodegree + VitaD_protein + mthfd2l_snp
+  '
+sem_mthfd2l_model_sleepiness_fit = sem(sem_mthfd2l_model_sleepiness, data = ukb_pheno_mthfd2_prs_highPRS)
+
+summary(sem_mthfd2l_model_sleepiness_fit, standardized = TRUE, fit.measures = TRUE)
+```
+
+
+
+#### Two sample MR analysis of MTHFD2 and MTHFD2L vs AD risk 
+
+
+```{r}
+library(TwoSampleMR)
+ao <- available_outcomes()
+library(MRInstruments)
+data(gtex_eqtl)
+exposure_dat <- format_gtex_eqtl(gtex_eqtl[c(28025,56657,67941,100530,185843,275402), ])
+exposure_dat <- clump_data(exposure_dat)
+outcome_dat <- extract_outcome_data(exposure_dat$SNP, c('ieu-b-2'), proxies = 1, rsq = 0.8, align_alleles = 1, palindromes = 1, maf_threshold = 0.3)
+dat <- harmonise_data(exposure_dat, outcome_dat, action = 2)
+mr_results <- mr(dat)
+mr_results
+```
+
+library(TwoSampleMR)
+ao <- available_outcomes()
+library(MRInstruments)
+
+```{r}
+
+data(gtex_eqtl)
+exposure_dat <- format_gtex_eqtl(gtex_eqtl[c(9437,58318,64776,69393,131439,190373,28025,56657,67941,100530,185843,275402), ])
+exposure_dat$id.exposure = "MTHFD2L or MTHFD2 levels"
+#exposure_dat <- clump_data(exposure_dat)
+outcome_dat <- extract_outcome_data(exposure_dat$SNP, c('ieu-b-2'), proxies = 1, rsq = 0.8, align_alleles = 1, palindromes = 1, maf_threshold = 0.3)
+dat <- harmonise_data(exposure_dat, outcome_dat, action = 2)
+mr_results <- mr(dat, method_list=c("mr_egger_regression","mr_egger_regression_bootstrap", "mr_ivw"))
+mr_scatter_plot(mr_results, dat)
+```
+
+
+
+## Analysis of FA vs AD risk
+
+#### Extract additional data for folate and AD diagnosis date
+
+```{bash eval = FALSE}
+/home/yizhouyu/anaconda3/bin/python python_scripts/UKB_selColumns.py \
+-i /home/yizhouyu/raid/ukb_07072021/ukb47449.csv \
+-c data/metadt/metadt_folate.csv \
+-o data/folate_AD_dt.csv
+```
+
+Only use if person took folate between 2006-2010
+```{r}
+add_FA_dt = read.csv("data/folate_AD_dt.csv", na.strings = "")
+add_FA_dt$folate = FALSE
+add_FA_dt$folate[add_FA_dt$X6155.0.0 == 6] <- TRUE
+add_FA_dt$folate[add_FA_dt$X6155.0.1 == 6] <- TRUE
+add_FA_dt$folate[add_FA_dt$X6155.0.2 == 6] <- TRUE
+add_FA_dt$folate[add_FA_dt$X6155.0.3 == 6] <- TRUE
+add_FA_dt$folate[add_FA_dt$X6155.0.4 == 6] <- TRUE
+add_FA_dt$folate[add_FA_dt$X6155.0.5 == 6] <- TRUE
+add_FA_dt$folate[add_FA_dt$X6155.0.6 == 6] <- TRUE
+#add_FA_dt$folate[add_FA_dt$X6155.0.0 == -7] <- FALSE
+#add_FA_dt$folate[add_FA_dt$X6155.0.0 == -3] <- FALSE
+	
+add_FA_dt = subset(add_FA_dt, select = c(eid,folate,X42020.0.0, X34.0.0,X53.0.0))
+colnames(add_FA_dt) <- c("eid","FA","ad_diag_date","birth","init_assess_date")
+add_FA_dt$ad_age = substr(add_FA_dt$ad_diag_date,1,4)
+add_FA_dt$ad_age <- as.numeric(add_FA_dt$ad_age) - as.numeric(add_FA_dt$birth)
+# People who do not yet have AD will have: ad_age = (last date of AD diagnosis) - birth year, their AD diag label would be FALSE. This way, we will not exclude their data
+# The last year of AD diagnosis in this dataset is 2018
+
+add_FA_dt$age_2018 = 2018 - add_FA_dt$birth
+add_FA_dt$ad_age2 = ifelse(is.na(add_FA_dt$ad_age), add_FA_dt$age_2018, add_FA_dt$ad_age)
+write.csv(add_FA_dt,"data_out/curated_FA_dt.csv", row.names = F)
+```
+
+Remove people who were diagnosed for AD before the initial visit. This excludes people who are already diagnosed with AD and are taking folic acid. The remaining people would not have have been diagnosed in their initial assessment when they would have claimed if they take folic acid or not. 
+
+```{r}
+add_FA_dt = read.csv("data_out/curated_FA_dt.csv")
+add_FA_dt$prevAD = add_FA_dt$ad_diag_date < add_FA_dt$init_assess_date
+ukb_pheno_FA = merge(ukb_pheno, add_FA_dt, by = "eid")
+ukb_pheno_FA$prevAD[ukb_pheno_FA$ad_diag == FALSE] <- NA
+
+write.csv(ukb_pheno_FA, "data_out/ukb_added_FA_dt.csv", row.names = F)
+```
+
+
+### Model FA intake and AD risk in whole cohort
+
+#### AD age of diagnosis and FA 
+
+##### Cox regression and linear model
+
+```{r}
+library(gtsummary)
+ukb_pheno_FA_postAD = subset(ukb_pheno_FA, prevAD == FALSE | is.na(prevAD))
+cox_hr = coxph(Surv(ad_age,ad_diag) ~ townsend + sex + uni + nodegree + VitaD_protein +FA, data = ukb_pheno_FA_postAD)
+summary(cox_hr)
+
+```
+
+```{r}
+cox_hr %>% 
+  tbl_regression(exp = TRUE,
+                            pvalue_fun = ~style_pvalue(.x, digits = 2)) 
+```
+
+```{r}
+cox_hr_results = as.data.frame(summary(cox_hr)$coefficient)
+cox_hr_results$CI025 = confint(cox_hr)[,1]
+cox_hr_results$CI975 = confint(cox_hr)[,2]
+cox_hr_results$variables = row.names(cox_hr_results)
+
+ggplot(cox_hr_results, 
+       aes(x=reorder(variables, coef), y=exp(coef))) + 
+    geom_errorbar(aes(ymin=exp(CI025), ymax=exp(CI975)),
+                  width=0,                    # Width of the error bars
+                  position=position_dodge(.9), color = "#939598", size = 1.5) +
+      geom_point(shape=21, size = 2, color = '#ED2024', fill = "#ED2024") +
+  theme_classic() + 
+  geom_hline(yintercept = 1, linetype="dotted") +
+  coord_flip()+ylab("Hazard ratios") + 
+  xlab("") + theme(axis.ticks.y = element_blank()) + theme(axis.text.x = element_text(colour = "#231F20"),
+        axis.text.y = element_text(colour = "#231F20"))
+ggsave('fig_out/cox_hr_folate_AD_patients_only.pdf', width = 6, height = 3)
+```
+
+
+##### Linear regression 
+
+```{r}
+folate_lm = lm(formula = ad_age ~ townsend + sex + uni + nodegree + VitaD_protein + FA,data = ukb_pheno_FA_postAD)
+summary(folate_lm)
+```
+
+```{r}
+folate_lm_results = as.data.frame(summary(folate_lm)$coefficient)
+folate_lm_results$CI025 = confint(folate_lm)[,1]
+folate_lm_results$CI975 = confint(folate_lm)[,2]
+folate_lm_results$variables = row.names(folate_lm_results)
+folate_lm_results = subset(folate_lm_results, variables != "(Intercept)")
+
+ggplot(folate_lm_results, 
+       aes(x=reorder(variables, Estimate), y=(Estimate))) + 
+    geom_errorbar(aes(ymin=(CI025), ymax=(CI975)),
+                  width=0,                    # Width of the error bars
+                  position=position_dodge(.9), color = "#939598", size = 1.5) +
+      geom_point(shape=21, size = 2, color = '#ED2024', fill = "#ED2024") +
+  theme_classic() + 
+  geom_hline(yintercept = 0, linetype="dotted") +
+  coord_flip()+ylab("Age of Alzheimer's disease diagnosis") + 
+  xlab("") + theme(axis.ticks.y = element_blank()) + theme(axis.text.x = element_text(colour = "#231F20"),
+        axis.text.y = element_text(colour = "#231F20"))
+ggsave('fig_out/folate_AD_age_onset_lm.pdf', width = 6, height = 3)
+```
+
+Both models suggest that FA delays age of AD diagnosis, but the associations are not significant. Nonetheless, the trends are good. 
+
+#### AD diagnosis risk and FA 
+
+```{r}
+folate_glm = glm(formula = paste0(ad_formula, "FA"),family="binomial", data = ukb_pheno_FA_postAD)
+summary(folate_glm)
+```
+Suggests that FA is associated with higher risk of AD. However, 2X more women take FA than men, and women are also more likely to get AD.
+
+```{r}
+ukb_pheno_FA_postAD_F = subset(ukb_pheno_FA_postAD, sex == "Female")
+folate_glm_F = glm(formula = paste0("ad_diag ~ age + townsend + uni + nodegree + VitaD_protein +", "FA"),family="binomial", data = ukb_pheno_FA_postAD_F)
+summary(folate_glm_F)
+```
+
+```{r}
+ukb_pheno_FA_postAD_M = subset(ukb_pheno_FA_postAD, sex == "Male")
+folate_glm_M = glm(formula = paste0("ad_diag ~ age + townsend + uni + nodegree + VitaD_protein +", "FA"),family="binomial", data = ukb_pheno_FA_postAD_M)
+summary(folate_glm_M)
+```
+
+### AD risk ~ FA in high polygenic risk individuals 
+
+```{r}
+ukb_pheno_FA_prs = merge(ukb_pheno_FA_postAD, AD_variants_PRS, by = "eid", all.x = T)
+ukb_pheno_FA_prs = subset(ukb_pheno_FA_prs, ad_prs > median(na.omit(ukb_pheno_FA_prs$ad_prs)))
+```
+
+
+```{r}
+folate_glm_prs = glm(formula = paste0(ad_formula, "+ FA"),family="binomial", data = ukb_pheno_FA_prs)
+summary(folate_glm_prs)
+
+```
+
+```{r}
+ukb_pheno_FA_prs_F = subset(ukb_pheno_FA_prs, sex == "Female")
+folate_glm_prs_F = glm(formula = paste0("ad_diag ~ age + townsend + uni + nodegree + VitaD_protein +", "+ FA"),family="binomial", data = ukb_pheno_FA_prs_F)
+summary(folate_glm_prs_F)
+
+```
+
+```{r}
+ukb_pheno_FA_prs_M = subset(ukb_pheno_FA_prs, sex == "Male")
+folate_glm_prs_M = glm(formula = paste0("ad_diag ~ age + townsend + uni + nodegree + VitaD_protein +", "+ FA"),family="binomial", data = ukb_pheno_FA_prs_M)
+summary(folate_glm_prs_M)
+
+```
+
+In both instances, higher genetic risk for AD increases the odds of FA being protective for AD. 
+
+
+#### Interaction: effect of FA on the AD ~ PRS relationship
+
+Calculate N of AD diagnosis predicted with and without FA as a covariate
+
+```{r}
+ukb_pheno_FA_postAD_intPRS = merge(ukb_pheno_FA_postAD, AD_variants_PRS, by = "eid", all.x = T)
+ukb_pheno_FA_postAD_intPRS = subset(ukb_pheno_FA_postAD_intPRS, select = 
+                                      c(ad_prs,  ad_diag, FA))
+ukb_pheno_FA_postAD_intPRS_na = na.omit(ukb_pheno_FA_postAD_intPRS)
+
+folate_glm_noFA = glm(formula = ad_diag ~ ad_prs,family="binomial", data = subset(ukb_pheno_FA_postAD_intPRS_na, FA == FALSE))
+
+folate_glm_withFA = glm(formula = ad_diag ~ ad_prs,family="binomial", data = subset(ukb_pheno_FA_postAD_intPRS_na, FA == TRUE))
+
+```
+
+```{r}
+folate_glm_noFA_fitted = folate_glm_noFA$fitted
+folate_glm_withFA_fitted = folate_glm_withFA$fitted
+#folate_glm_noFA_fitted = ifelse(folate_glm_noFA_fitted > mean(folate_glm_noFA_fitted), TRUE , FALSE)
+#folate_glm_withFA_fitted = ifelse(folate_glm_withFA_fitted > mean(folate_glm_withFA_fitted), TRUE , FALSE)
+
+# create a df
+folate_glm_noFA_fitted_df = data.frame(folate_glm_noFA_fitted)
+folate_glm_noFA_fitted_df$condition = "noFA"
+colnames(folate_glm_noFA_fitted_df) <- c("fitted_values","condition")
+
+folate_glm_withFA_df = data.frame(folate_glm_withFA_fitted)
+folate_glm_withFA_df$condition = "FA"
+colnames(folate_glm_withFA_df) <- c("fitted_values","condition")
+
+folate_glm_fitted_df = rbind(folate_glm_noFA_fitted_df,folate_glm_withFA_df)
+
+wilcox.test(fitted_values~as.factor(condition), folate_glm_fitted_df)
+```
+
+```{r}
+ggplot(folate_glm_fitted_df, aes(y = fitted_values, x = as.factor(condition)))+
+  geom_violin() + stat_summary(fun.y=mean, geom="point", shape=23, size=2)
+```
+
+
+```{r}
+
+ukb_pheno_FA_AD_PRS = merge(ukb_pheno_FA_postAD, AD_variants_PRS, by = "eid", all.x = T)
+
+ggplot(ukb_pheno_FA_AD_PRS,aes(x=FA, y=ad_prs)) + 
+  geom_violin() + stat_summary(fun.data=mean_sdl, mult=1, 
+                 geom="pointrange", color="red") +
+  facet_grid(. ~ ad_diag)+
+  labs(x='', y="polygenic risk score")
+
+```
+
+
+
+## Mendelian randomisation for folate intake and AD (one sample)
+
+MR can be performed in a “one-sample” or a “two-sample” setting. One-sample MR is
+performed when the data on the exposure and the outcome are derived from a single
+dataset (Burgess, Davies, & Thompson, 2016). Two-sample MR is performed when the data
+on the exposure and the outcome are derived from two non-overlapping and independent
+datasets, allowing one dataset to be used for performing the summary-level instrumentexposure analysis and the other dataset for performing the instrument-outcome association
+analysis(Burgess et al., 2016; Hartwig, Davies, Hemani, & Davey Smith, 2016). 
+
+
+Download GWAS data of the UK from https://github.com/Nealelab/UK_Biobank_GWAS
+
+### load pre-computed GWAS data 
+
+The useful columns in the original files (e.g. AD.gwas.imputed_v3.both_sexes.tsv): 
+- 1 --  variant
+- 9 --  beta (Estimated effect size of alt allele.)
+- 10 -- se 
+- 12 -- pval 
+
+In the "variants.tsv", the columns needed are:
+- 1 -- variant 
+- 2 -- chromosome
+- 3 -- position
+- 6 -- rsid
+
+All files are modified with cat 6155_6.gwas.imputed_v3.both_sexes.tsv | cut -f1,9,10,12 > 6155_6.gwas.imputed_v3.both_sexes_subset.tsv
+
+and saved as *subset.tsv
+
+#### AD GWAS manhattan 
+
+
+Input from CMplot:
+a dataframe, at least four columns. The first column is the name of SNP, the second column is the chromosome of SNP, the third column is the position of SNP, and the remaining columns are the P-value of each trait(Note:each trait a column).
+
+
+```{r eval = FALSE}
+ad_gwas_ukb = read.csv("data_out/AD.gwas.imputed_v3.both_sexes_subset.tsv", sep="\t", header=T)
+
+ad_gwas_ukb_addInfo = merge(read.csv("data_out/variants_subset.tsv", sep="\t", header=T),ad_gwas_ukb, by = "variant")
+
+ad_gwas_ukb_plot = na.omit(subset(ad_gwas_ukb_addInfo, select = c(rsid,chr,pos,pval)))
+ad_gwas_ukb_plot$pval = as.numeric(ad_gwas_ukb_plot$pval)
+ad_gwas_ukb_plot$pval[ad_gwas_ukb_plot$pval == 0] <- 0.00000000000000000000001
+
+CMplot::CMplot(ad_gwas_ukb_plot,
+               type="p",
+               plot.type="c",
+               col=c("#939598"),
+               LOG10=TRUE,
+               threshold=c(1e-8),
+               signal.col=c("#ED2024"),
+               amplify=FALSE,
+               cir.legend=TRUE,
+              outward=FALSE,
+              cir.legend.col="#231F20",
+              cir.chr.h=1.3,
+              chr.den.col="#231F20",
+              file="pdf",
+              memo="",
+              dpi=300,
+              file.output=TRUE,
+              verbose=FALSE,width=10,height=10)
+
+```
+
+#### FA GWAS manhattam
+
+```{r}
+fa_gwas_ukb = read.csv("data_out/6155_6.gwas.imputed_v3.both_sexes_subset.tsv", sep="\t", header=T)
+
+fa_gwas_ukb_addInfo = merge(read.csv("data_out/variants_subset.tsv", sep="\t", header=T),fa_gwas_ukb, by = "variant")
+
+CMplot::CMplot(na.omit(subset(fa_gwas_ukb_addInfo, select = c(rsid,chr,pos,pval))),
+               type="p",
+               plot.type="c",
+               col=c("#939598"),
+               LOG10=TRUE,
+               threshold=c(1e-8),
+               signal.col=c("#ED2024"),
+               amplify=FALSE,
+               cir.legend=TRUE,
+              outward=FALSE,
+              cir.legend.col="#231F20",
+              cir.chr.h=1.3,
+              chr.den.col="#231F20",
+              file="pdf",
+              memo="",
+              dpi=300,
+              file.output=TRUE,
+              verbose=FALSE,width=10,height=10)
+write.table(fa_gwas_ukb_addInfo,"data_out/folate.gwas.imputed_v3.both_sexes_addInfo.tsv",row.names=FALSE, sep="\t", quote=FALSE)
+
+```
+
+
+### Create a PRS for folate intake using PRSice
+
+get A1 and A2 from variants.tsv
+
+In the "variants.tsv", the columns needed are:
+- 1 -- variant 
+- 4 -- ref allele
+- 5 -- alt allele <- this is the effect allele
+
+cat variants.tsv | cut -f1,4,5 > variants_prisceAddInfo.tsv
+
+note: I noticed that all toy inputs for PRSice are space sep files.
+
+#### Format input GWAS data 
+
+```{r}
+fa_gwas_ukb_prsice = merge(read.csv("data_out/variants_prisceAddInfo.tsv", sep="\t", header=T),fa_gwas_ukb_addInfo, by = "variant")
+write.table(fa_gwas_ukb_prsice,"data_out/folate.gwas.imputed_v3.both_sexes_prsice.gwas",row.names=FALSE, quote=FALSE)
+```
+
+```{r}
+folate_ukb_pheno_prsice = subset(add_FA_dt, select = c(eid,FA))
+folate_ukb_pheno_prsice$FA = folate_ukb_pheno_prsice$FA * 1
+colnames(folate_ukb_pheno_prsice) <- c("IID","FA")
+write.table(folate_ukb_pheno_prsice,"data_out/folate_ukb_pheno_prsice.pheno",row.names=FALSE, quote=FALSE)
+```
+
+#### Format input SNP data 
+
+cd ~/raid/ukb_07072021_snp_dt
+
+Bim files: 
+
+for file in ukb_snp_chr*_v2.bim
+do
+  mv "$file" "${file/_v2/}"
+done
+
+for file in ukb_snp_chr*
+do
+  mv "$file" "${file/snp_chr/cal_chr}"
+done
+
+
+Bed & Fam files: 
+
+for file in ukb_cal_chr*
+do
+  mv "$file" "${file/_v2/}"
+done
+
+#### Run PRSice
+
+Note: fid = family ID, and IID = sample ID 
+```{bash}
+Rscript PRSice/PRSice.R --dir . \
+    --prsice ./PRSice/PRSice_linux \
+    --base /home/yizhouyu/raid/camDrive/manuscripts/Abeta_nt_metabolism/Abeta_FA_UKB/data_out/folate.gwas.imputed_v3.both_sexes_prsice.gwas \
+    --target ~/raid/ukb_07072021_snp_dt/ukb_cal_chr# \
+    --thread 1 \
+    --stat OR \
+    --binary-target T \
+    --snp rsid --chr chr --bp pos --A1 ref --A2 alt --stat beta --pvalue pval \
+    --extract PRSice.valid \
+    --pheno /home/yizhouyu/raid/camDrive/manuscripts/Abeta_nt_metabolism/Abeta_FA_UKB/data_out/folate_ukb_pheno_prsice.pheno \
+    --pheno-col FA \
+    --ignore-fid \
+    --out folate_prsice_results \
+    --quantile 10 \
+    --score avg \
+    --or \
+    --seed 123
+```
+
+### Prep file for one sample MR 
+
+#### Load PRS
+
+```{r}
+# load PRS 
+folate_ukb_prs = read.table("PRSice_folate_output/folate_prsice_results.best",
+                            header = T)
+folate_ukb_prs = subset(folate_ukb_prs, select = c(IID,PRS))
+colnames(folate_ukb_prs)<- c("eid","folate_prs")
+```
+
+#### Load Genetic principal components
+
+```{bash eval = FALSE}
+/home/yizhouyu/anaconda3/bin/python python_scripts/UKB_selColumns_full_InfoFromFile.py \
+-i /home/yizhouyu/raid/ukb_07072021/ukb47449.csv \
+-c data/metadt/metadt_gen_PC.csv \
+-o data/gen_PC.csv
+```
+
+```{r}
+ukb_gen_pc = read.csv("data/gen_PC.csv")
+ukb_gen_pc_metadata = read.csv("data/metadt/metadt_gen_PC.csv")
+colnames(ukb_gen_pc)<-c("eid",ukb_gen_pc_metadata$my_colname)
+```
+
+#### Combine datasets
+```{r}
+ukb_FA_dt = read.csv("data_out/curated_FA_dt.csv")
+ukb_FA_dt = subset(ukb_FA_dt, select = c(eid,FA))
+ukb_pheno = read.csv("data_out/ukb_pheno.csv")
+ukb_pheno_FA = merge(ukb_pheno,ukb_FA_dt, by = "eid", all.x = T)
+write.csv(ukb_pheno_FA, "data_out/ukb_pheno_FA.csv", row.names = F)
+```
+
+```{r}
+ukb_pheno_FA = merge(ukb_pheno_FA,ukb_gen_pc, by = "eid", all.x = T)
+ukb_pheno_FA = merge(ukb_pheno_FA,folate_ukb_prs, by = "eid", all.x = T)
+write.csv(ukb_pheno_FA,"data_out/ukb_pheno_FA_gen_PC_FAprs_merged.csv", row.names = F)
+```
+
+### Perform IV reg 
+```{r}
+
+FA_test = glm(FA~folate_prs, family = "binomial",data=ukb_pheno_FA)
+summary(FA_test)
+```
+
+```{r}
+# perform iv regression
+
+iv_mod <- ivreg::ivreg(ad_diag ~ age + sex+ townsend + uni + nodegree + VitaD_protein + british| FA | folate_prs, data = ukb_pheno_FA)
+
+# check diagnostics
+summary(iv_mod, diagnostics = TRUE)
+```
+
+https://cran.r-project.org/web/packages/OneSampleMR/OneSampleMR.pdf
+
+```{r}
+iv_probit_mod <- OneSampleMR::msmm(ad_diag ~ age + sex+ townsend + uni + nodegree + VitaD_protein + british| FA | folate_prs, data = ukb_pheno_FA)
+
+summary(iv_probit_mod, diagnostics = TRUE)
+```
+sad 
+
+
+```{r}
+ad_fa_prs_glm <- glm(ad_diag ~ folate_prs + age + sex + townsend + uni + nodegree + VitaD_protein, family = "binomial", data = ukb_pheno_FA)
+summary(ad_fa_prs_glm)
+```
+
+## Mendelian randomisation for folate intake and AD (two sample)
+
+### Using the native settings
+
+using the UKB FA data + the Kunkle et al GWAS
+
+note: clumping = prune the set of SNPs for LD
+```{r}
+library(TwoSampleMR)
+ao <- available_outcomes()
+exposure_dat <- extract_instruments(c('ukb-b-3563'), p1 = 5e-8)
+outcome_dat <- extract_outcome_data(exposure_dat$SNP, c('ieu-b-2'), proxies = 1, rsq = 0.8, align_alleles = 1, palindromes = 1, maf_threshold = 0.3)
+dat <- harmonise_data(exposure_dat, outcome_dat, action = 2)
+mr_results <- mr(dat, method_list=c("mr_egger_regression_bootstrap", "mr_ivw"))
+
+mr_scatter_plot(mr_results, dat)
+```
+
+Only 2 SNPs... which is not good. However, these 2 SNPs could be interesting. 
+
+### Using the FA GWAS data from the manhattan plot 
+
+#### pval <= 5e-8
+
+```{r}
+fa_gwas_ukb_addInfo_5e8 = subset(fa_gwas_ukb_addInfo, pval <= 5e-8)
+
+```
+
+
+In the "variants.tsv", the columns needed are:
+- 1 -- variant 
+- 13 -- AF
+- 4 -- ref
+- 5 -- alt
+
+All files are modified with cat 6155_6.gwas.imputed_v3.both_sexes.tsv | cut -f1,9,10,12 > 6155_6.gwas.imputed_v3.both_sexes_subset.tsv
+
+```{r}
+fa_gwas_ukb_addInfo_5e8_addInfo = merge(read.csv("data_out/variants_mr.tsv", sep="\t", header=T),fa_gwas_ukb_addInfo_5e8, by = "variant")
+write.csv(fa_gwas_ukb_addInfo_5e8_addInfo, "data_out/fa_gwas_ukb_addInfo_5e8_addInfo_TwoSampleMR.csv", row.names = F)
+
+fa_gwas_ukb_addInfo_5e8_formatted = 
+  format_data(fa_gwas_ukb_addInfo_5e8_addInfo,
+    type = "exposure",
+    snps = NULL,
+    header = TRUE,
+    snp_col = "rsid",
+    beta_col = "beta",
+    se_col = "se",
+    pval_col = "pval",
+    eaf_col = "AF", #
+    effect_allele_col = "alt", 
+    other_allele_col = "ref", 
+    chr_col = "chr",
+  pos_col = "pos"
+  )
+fa_gwas_ukb_addInfo_5e8_formatted = clump_data(fa_gwas_ukb_addInfo_5e8_formatted, clump_r2 = 0.1)
+
+fa_gwas_ukb_addInfo_5e8_formatted_outcome_dat <- extract_outcome_data(fa_gwas_ukb_addInfo_5e8_formatted$SNP, c('ieu-b-2'), proxies = 1, rsq = 0.8, align_alleles = 1, palindromes = 1, maf_threshold = 0.3)
+
+```
+
+```{r}
+harm_dat = harmonise_data(
+    exposure_dat = fa_gwas_ukb_addInfo_5e8_formatted, 
+    outcome_dat = fa_gwas_ukb_addInfo_5e8_formatted_outcome_dat,
+    action = 2
+)
+mr_results2 <- mr(harm_dat)
+mr_scatter_plot(mr_results2, harm_dat)
+```
+
+```{r}
+mr_results2[,c("nsnp","method","b","pval")]
+mr_pleiotropy_test(harm_dat)[,c("egger_intercept","pval")]
+```
+
+MR Steiger directionality test
+
+[Hemani G, Tilling K, Davey Smith G.<br/>
+**Orienting the causal relationship between imprecisely measured traits using GWAS summary data.**<br/>
+PLoS Genetics. 2017. 13(11).](http://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1007081)
+
+
+Note the FA gwas was on 361194 people
+
+
+```{r}
+harm_dat_dirct = harm_dat
+harm_dat_dirct$samplesize.exposure = rep.int(361194, nrow(harm_dat))
+
+
+knitr::kable(directionality_test(harm_dat_dirct
+))
+```
+
+
+#### pval <= 5e6 (sensitivity analysis)
+
+```{r}
+fa_gwas_ukb_addInfo_5e6 = subset(fa_gwas_ukb_addInfo, pval <= 5e-6)
+fa_gwas_ukb_addInfo_5e6_addInfo = merge(read.csv("data_out/variants_mr.tsv", sep="\t", header=T),fa_gwas_ukb_addInfo_5e6, by = "variant")
+
+
+fa_gwas_ukb_addInfo_5e6_formatted = 
+  format_data(fa_gwas_ukb_addInfo_5e6_addInfo,
+    type = "exposure",
+    snps = NULL,
+    header = TRUE,
+    snp_col = "rsid",
+    beta_col = "beta",
+    se_col = "se",
+    pval_col = "pval",
+    eaf_col = "AF", #
+    effect_allele_col = "alt", 
+    other_allele_col = "ref", 
+    chr_col = "chr",
+  pos_col = "pos"
+  )
+fa_gwas_ukb_addInfo_5e6_formatted = clump_data(fa_gwas_ukb_addInfo_5e6_formatted, clump_r2 = 0.01)
+
+fa_gwas_ukb_addInfo_5e6_formatted_outcome_dat <- extract_outcome_data(fa_gwas_ukb_addInfo_5e6_formatted$SNP, c('ieu-b-2'), proxies = 1, rsq = 0.8, align_alleles = 1, palindromes = 1, maf_threshold = 0.3)
+
+harm_dat_5e6 = harmonise_data(
+    exposure_dat = fa_gwas_ukb_addInfo_5e6_formatted, 
+    outcome_dat = fa_gwas_ukb_addInfo_5e6_formatted_outcome_dat,
+    action = 2
+)
+harm_dat_5e6_mr <- mr(harm_dat_5e6, method_list=c("mr_egger_regression_bootstrap", "mr_ivw"))
+mr_scatter_plot(harm_dat_5e6_mr, harm_dat_5e6)
+ggsave("fig_out/mr_scatter_plot_5e6.pdf",width = 5, height = 4)
+```
+
+
+
+```{r}
+harm_dat_5e6_mr[,c("nsnp","method","b","pval")]
+```
+
+Horizontal pleiotropy
+The intercept term in MR Egger regression can be a useful indication of whether directional horizontal pleiotropy is driving the results of an MR analysis. 
+
+```{r}
+mr_pleiotropy_test(harm_dat_5e6)[,c("egger_intercept","pval")]
+```
+
+
+```{r}
+harm_dat_5e6_direct = mr_steiger(
+	p_exp = harm_dat_5e6$pval.exposure, 
+	p_out = harm_dat_5e6$pval.outcome, 
+	n_exp = rep.int(361194, nrow(harm_dat_5e6)), 
+	n_out = harm_dat_5e6$samplesize.outcome, 
+	r_xxo = 1, 
+	r_yyo = 1,
+	r_exp=harm_dat_5e6$beta.exposure,
+	r_out = harm_dat_5e6$beta.outcome
+)
+harm_dat_5e6_dirct_data = harm_dat_5e6
+harm_dat_5e6_dirct_data$samplesize.exposure = rep.int(361194, nrow(harm_dat_5e6))
+
+
+knitr::kable(directionality_test(harm_dat_5e6_dirct_data
+))
+
+```
+
+This indicates correct and significant causality of exposure to outcome
+
+#### Output of Two Samples MR 
+```{r}
+write.csv(directionality_test(harm_dat_5e6_dirct_data
+),"data_out/output_2sampleMR_directionality.csv", row.names = F)
+```
+
+Hemani G, Tilling K, Davey Smith G.
+Orienting the causal relationship between imprecisely measured traits using GWAS summary data.
+PLoS Genetics. 2017. 13(11).
+
+```{r}
+write.csv(mr_pleiotropy_test(harm_dat_5e6),"data_out/output_2sampleMR_mr_pleiotropy_test.csv", row.names = F)
+
+```
+
+```{r}
+write.csv(generate_odds_ratios(harm_dat_5e6_mr),"data_out/output_2sampleMR_odds_ratio.csv", row.names = F)
+
+generate_odds_ratios(harm_dat_5e6_mr)
+```
+
+
+```{r}
+mr_forest_plot(mr_singlesnp(harm_dat_5e6))
+ggsave("mr_forest_plot_AD_FA_5e6.pdf", width = 5, height = 3)
+```
+
+
+# Cognitive variables and FA / MTHFD2L SNPs
+
+Curated dataset: ukb_pheno_FA_gen_PC_FAprs_merged.csv
+
+## folate intake and cognitive variables in cohort high risk for AD
+
+```{r}
+cog_dt_metadt = read.csv("data/metadt/metadt_cog.csv")
+
+cog_variables = substr(cog_dt_metadt$my_colname,1,nchar(cog_dt_metadt$my_colname)-1)
+cog_variables = cog_variables[!duplicated(cog_variables)]
+cog_variables
+```
+
+Check the number of AD patients who did the cognitive tests
+```{r}
+ukb_pheno_FA_AD_susbet = subset(ukb_pheno_FA, ad_diag == TRUE)
+#subset(ukb_pheno_FA_AD_susbet, select = cog_variables)
+```
+
+None of the AD patients have data on cognitive testings --> do the analysis patients with high PRS for AD 
+
+```{r}
+AD_variants_PRS = read.csv("data_out/AD_variants_PRS.csv")
+ukb_pheno_FA = merge(ukb_pheno_FA, AD_variants_PRS, by = "eid", all.x = TRUE)
+ukb_pheno_FA_AD_susbet = subset(ukb_pheno_FA, ad_prs >= mean(as.numeric(ukb_pheno_FA$ad_prs), na.rm = T))
+
+lm_df = data.frame()
+
+for (i in 1:length(cog_variables)){
+  formul = paste0(cog_variables[i], " ~ age + sex + townsend + uni + nodegree + VitaD_protein + FA")
+
+  lm = lm(formula = formul, data = ukb_pheno_FA_AD_susbet)
+  var.name = cog_variables[i]
+  
+  coef = as.data.frame(summary(lm)$coefficients)$Estimate[length(as.data.frame(summary(lm)$coefficients)$Estimate)]
+  
+  CI025 = as.data.frame(confint.default(lm)[nrow(confint.default(lm)),1])
+  CI975 = as.data.frame(confint.default(lm)[nrow(confint.default(lm)),2])
+  
+  p = as.data.frame(summary(lm)$coefficients)$`Pr(>|t|)`[length(as.data.frame(summary(lm)$coefficients)$`Pr(>|t|)`)]
+  
+  lm_df = rbind(lm_df, unname(c(var.name,coef,CI025,CI975,p)))
+}
+
+colnames(lm_df) <- c("Variable","Beta","CI025","CI975","p")
+lm_df$fdr = p.adjust(lm_df$p, method = "BH")
+
+#write.csv(lm_df, "data_out/mthfd2_SNPs_whole_cohort.csv", row.names = F)
+
+```
+
+```{r}
+library(lavaan)
+
+sem_ad_cog_FA_model <- '
+  # cognition
+  cognition =~ cog_symbol + cog_rt + cog_pal + cog_numeric + cog_tmta + cog_matrix
+  
+  # Regression
+  cognition ~ age + sex + townsend + uni + nodegree + VitaD_protein + FA
+  '
+
+sem_ad_cog_FA_model_fit = sem(sem_ad_cog_FA_model, data = ukb_pheno_FA_AD_susbet)
+
+summary(sem_ad_cog_FA_model_fit, standardized = TRUE, fit.measures = TRUE)
+```
+
+
+## folate intake and imaging variables in cohort high risk for AD
+
+The variables have been normalised for head size 
+```{r}
+idp_dt_metadt = read.csv("data/metadt/metadt_idp.csv")
+
+idp_variables = substr(idp_dt_metadt$my_colname,1,nchar(idp_dt_metadt$my_colname)-1)
+idp_variables = idp_variables[!duplicated(idp_variables)]
+idp_variables
+```
+
+Check that high AD PRS --> lower hippocampal volume
+
+```{r}
+lm_hippVol_AD = lm(left_hippVo~ age + sex + townsend + uni + nodegree + VitaD_protein + ad_prs.x,ukb_pheno_FA)
+summary(lm_hippVol_AD)
+```
+
+```{r}
+lm_hippVol_AD = lm(left_hippVo~ age + sex + townsend + uni + nodegree + VitaD_protein + ad_prs.x,ukb_pheno_FA)
+summary(lm_hippVol_AD)
+```
+
+```{r}
+lm_df = data.frame()
+
+for (i in 1:length(idp_variables)){
+  formul = paste0(idp_variables[i], " ~ age + sex + townsend + uni + nodegree + VitaD_protein + folate_prs")
+
+  lm = lm(formula = formul, data = ukb_pheno_FA_AD_susbet)
+  var.name = idp_variables[i]
+  
+  coef = as.data.frame(summary(lm)$coefficients)$Estimate[length(as.data.frame(summary(lm)$coefficients)$Estimate)]
+  
+  CI025 = as.data.frame(confint.default(lm)[nrow(confint.default(lm)),1])
+  CI975 = as.data.frame(confint.default(lm)[nrow(confint.default(lm)),2])
+  
+  p = as.data.frame(summary(lm)$coefficients)$`Pr(>|t|)`[length(as.data.frame(summary(lm)$coefficients)$`Pr(>|t|)`)]
+  
+  lm_df = rbind(lm_df, unname(c(var.name,coef,CI025,CI975,p)))
+}
+
+colnames(lm_df) <- c("Variable","Beta","CI025","CI975","p")
+#lm_df$fdr = p.adjust(lm_df$p, method = "BH")
+
+```
+
+Structure: three parts on the right-hand side indicating the exogenous variables, the endogenous variables, and the additional instrumental variables
+
+```{r}
+ukb_pheno_FA_AD_susbet$tot_hippGre = ukb_pheno_FA_AD_susbet$right_hippGre + ukb_pheno_FA_AD_susbet$left_hippGre
+
+hippVol_ivreg_FA = ivreg::ivreg(tot_hippGre ~ age + sex + townsend + uni + nodegree + VitaD_protein + british | FA | folate_prs, data = ukb_pheno_FA_AD_susbet)
+summary(hippVol_ivreg_FA, diagnostics = T)
+#formul
+```
+
+```{r}
+iv_reg_hippVol_FA = data.frame(summary(hippVol_ivreg_FA, diagnostics = T)$coefficients)
+iv_reg_hippVol_FA$variable = row.names(iv_reg_hippVol_FA)
+iv_reg_hippVol_FA$CI025 = confint(hippVol_ivreg_FA)[,1]
+iv_reg_hippVol_FA$CI975 = confint(hippVol_ivreg_FA)[,2]
+iv_reg_hippVol_FA = subset(iv_reg_hippVol_FA, variable != "(Intercept)")
+
+ggplot(iv_reg_hippVol_FA, 
+       aes(x=reorder(variable, Estimate), y=Estimate)) + 
+    geom_errorbar(aes(ymin=CI025, ymax=CI975),
+                  width=0,                    # Width of the error bars
+                  position=position_dodge(.9), color = "#939598", size = 1.5) +
+      geom_point(shape=21, size = 2, color = '#ED2024', fill = "#ED2024") +
+  theme_classic() + 
+  geom_hline(yintercept = 0, linetype="dotted") +
+  coord_flip()+ylab("Estimate on hippocampal grey volume") + 
+  xlab("") + theme(axis.ticks.y = element_blank()) + theme(axis.text.x = element_text(colour = "#231F20"),
+        axis.text.y = element_text(colour = "#231F20"))
+ggsave('fig_out/iv_reg_hippVol_FA_sig_only.pdf', width = 6, height = 3)
+```
+
+
+We used the imaging-derived phenotypes (IDPs) generated by UK Biobank. The MRI acquisition, pre-processing and imaging analysis for subcortical volumes and FA values of white matter tracts were all conducted by UK Biobank using standard protocols21, see supplementary material. Briefly, all imaging data was collected on a Siemens Skyra 3T scanner (https://www.healthcare.siemens.com/magnetic-resonance-imaging) and was preprocessed using FSL packages. For T1-weighted data, segmentation of brain was conducted in two steps: firstly, a tissue-type segmentation using FAST (FMRIB’s Automated Segmentation Tool)25 was applied to extract cerebrospinal fluid, grey matter and white matter; then subcortical structures are extracted using FIRST (FMRIB’s Integrated Registration and Segmentation Tool)26. For DTI data, parcellation of tracts were conducted using AutoPtx27.
+
+Patenaude, B., Smith, S. M., Kennedy, D. N. & Jenkinson, M. A Bayesian model of shape and appearance for subcortical brain segmentation. Neuroimage 56, 907–922 (2011)
+
+Day time sleep
+```{r}
+sleep_ivreg_FA = ivreg::ivreg(daysleep_sim ~ age + sex + townsend + uni + nodegree + VitaD_protein + british | FA | folate_prs, data = ukb_pheno_FA_AD_susbet)
+summary(sleep_ivreg_FA, diagnostics = T)
+```
+
+```{r}
+sleep_ivreg_FA_results = data.frame(summary(sleep_ivreg_FA, diagnostics = T)$coefficients)
+sleep_ivreg_FA_results$variable = row.names(sleep_ivreg_FA_results)
+sleep_ivreg_FA_results$CI025 = confint(sleep_ivreg_FA)[,1]
+sleep_ivreg_FA_results$CI975 = confint(sleep_ivreg_FA)[,2]
+sleep_ivreg_FA_results = subset(sleep_ivreg_FA_results, variable != "(Intercept)")
+
+ggplot(sleep_ivreg_FA_results, 
+       aes(x=reorder(variable, -Estimate), y=Estimate)) + 
+    geom_errorbar(aes(ymin=CI025, ymax=CI975),
+                  width=0,                    # Width of the error bars
+                  position=position_dodge(.9), color = "#939598", size = 1.5) +
+      geom_point(shape=21, size = 2, color = '#ED2024', fill = "#ED2024") +
+  theme_classic() + 
+  geom_hline(yintercept = 0, linetype="dotted") +
+  coord_flip()+ylab("Daytime sleepiness") + 
+  xlab("") + theme(axis.ticks.y = element_blank()) + theme(axis.text.x = element_text(colour = "#231F20"),
+        axis.text.y = element_text(colour = "#231F20"))
+ggsave('fig_out/iv_reg_sleep_FA_sig_only.pdf', width = 6, height = 3)
+```
+
+
+
+```{r}
+
+lm_df = data.frame()
+
+for (i in 1:length(cog_variables)){
+  scaled_var = paste0("scale(",cog_variables[i], ")")
+  
+  formul = paste0(scaled_var, " ~ age + sex + townsend + uni + nodegree + VitaD_protein + british | FA | folate_prs")
+  #in ivreg, FA is the first variaable after the intercept
+  
+  lm = ivreg::ivreg(formula = formul, data = ukb_pheno_FA_AD_susbet)
+  var.name = cog_variables[i]
+  
+  coef = as.data.frame(summary(lm)$coefficients)$Estimate[2]
+  
+  CI025 = as.data.frame(confint.default(lm)[2,1])
+  CI975 = as.data.frame(confint.default(lm)[2,2])
+  
+  p = as.data.frame(summary(lm)$coefficients)$`Pr(>|t|)`[2]
+  coef_age_ref = as.data.frame(summary(lm)$coefficients)$Estimate[3]
+  lm_df = rbind(lm_df, unname(c(var.name,coef,CI025,CI975,p,coef_age_ref)))
+}
+
+colnames(lm_df) <- c("Variable","Beta","CI025","CI975","p","coef_age_ref")
+iv_reg_cog_variables_FA = lm_df
+iv_reg_cog_variables_FA
+```
+
+All the directions are as hypothesised 
+
+```{r}
+ggplot(iv_reg_cog_variables_FA, 
+       aes(x=reorder(Variable, Beta), y=Beta)) + 
+    geom_errorbar(aes(ymin=CI025, ymax=CI975),
+                  width=0,                    # Width of the error bars
+                  position=position_dodge(.9), color = "#939598", size = 1.5) +
+      geom_point(shape=21, size = 2, color = '#ED2024', fill = "#ED2024") +
+  theme_classic() + 
+  geom_hline(yintercept = 0, linetype="dotted") +
+  coord_flip()+ylab("Estimate (raw score)") + 
+  xlab("") + theme(axis.ticks.y = element_blank()) + theme(axis.text.x = element_text(colour = "#231F20"),
+        axis.text.y = element_text(colour = "#231F20"))
+ggsave('fig_out/iv_reg_cog_variables_FA_sig_only.pdf', width = 6, height = 3)
+
+```
+
+
+
