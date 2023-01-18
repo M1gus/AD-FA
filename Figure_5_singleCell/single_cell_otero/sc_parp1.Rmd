@@ -1,0 +1,254 @@
+---
+title: "Analysis of PARP1 mRNA levels in scRNA seq"
+author: "Yizhou Yu"
+date: 'updated: <i>`r format(Sys.Date(),''%b-%d-%Y'')`</i></h4>'
+output:
+  pdf_document: default
+  word_document: default
+  html_document:
+    df_print: paged
+    keep_md: yes
+---
+download data: 
+
+`curl -o local.rds "https://corpora-data-prod.s3.amazonaws.com/f541adea-179c-484e-9f06-eaf8d27bca94/local.rds?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=ASIATLYQ5N5XYZBLLU6S%2F20221228%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20221228T035446Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEPD%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJHMEUCIBQJjSPuBtSseMrJG1qhgLJhbKTLNQbnlhXLQD9nYQ7fAiEAy3PBobg4vdpNo%2BDN%2FOmli9w4ilQr%2BMFu0%2BSBoN%2BAWnQq6wMIORABGgwyMzE0MjY4NDY1NzUiDLwAEyiaORP6sMM5VirIAwkrUFPpE0Jd1YsEvTcvuwhWEgV7bFInGPkh5I8SJ7OOJWr1lifuzO2pLqjtpZyfltJPKvzEI%2FWcM7H1yW4VNhDKTHARgEaR%2Fp4GscQ3Cs3XWXL8lTUtGHyhwLmiJLDhS%2BdqGehxj8AYpi8yxQvU6dEaq%2B2V3mMQBE6WOwoKDN%2FBPzCsXPldMvn3iJK07PKPLnwE%2FzER54G4KbMwdW%2FmoqeKuW1yU8MOv%2FHFwpbruxaF8NkoNcV24jtGJIzZTkTbbKkS%2Fr%2FM06AS3IpfS4veRV3SkDX4ZfqjNpIGjZTRseN%2FUzvtwmFD6Ubn%2FUEBOPKjhsKglB40rS7w2LBkakXefoTjbC%2BztQgnoj%2FT4tcmlmZzfOAoAsBGUqK4OEatYxeBAO2%2FVRpE%2FH9q%2Byrs1HkNWnK643TKnHLs6qE9bQWqq1ZULD4A9ElgkJPdZj64G9R4ZJuwZCuzXMEc2foeGwykzfQrj6h9qGzoVWMlDE01d0jCs9xxbYhG5yNkblf4q1YF2RzzREhc01FRHOlC4me6ghl9gUVefTISLrrUc9FfCm8Rk06UTPZueXKAoLafQFy9xqBrAKES9pXqSPV8FJsVndKpEtaA54SrozDui66dBjqlAd3Tm8NKevgOX5AukwiBH%2FqvrunrYbon1A%2BNhvcKHPnTU0P2eK%2FvOj1yUZbb%2FCQTbxuqAb3csEPB14XnaInQN3uramz%2BW9NCVDoXupLmb37MPQs%2BOpXF8jBL0PQLWzgAxzz9NCEYyRBeFmIRIRBfjqGVJQ3r%2F9I1NbrrSLTVziiZv0AP3jegAnz6mt68dnp%2BRCyJ%2BbRkFuzMFg%2B%2BMc88naeOvooPmg%3D%3D&X-Amz-Signature=e5039dae93e8ea7d5caa403195a6e1d1b975d601606be7b658e5ab1cbd16a820"`
+
+```{r}
+library(Seurat)
+library(ggplot2)
+```
+
+## Load seurat dt
+
+```{r}
+dt = readRDS("dt/otero.rds")
+```
+
+dt is too big.. need to purge 
+
+```{r}
+summary(dt@meta.data$Cell.Types)
+```
+c("#ED2024", "#939598")
+
+feature plot for PARP (ENSG00000143799)
+```{r}
+FeaturePlot(dt, features = "ENSG00000143799", cols = c("lightgrey","#ED2024")) 
+ggsave("fig/PARP1_levels_UMAP.pdf", width = 6, height = 4)
+```
+
+feature plot for MTHFD2L ENSG00000163738
+
+```{r}
+FeaturePlot(dt, features = "ENSG00000163738", cols = c("lightgrey","#ED2024")) 
+ggsave("fig/MTHFD2L_levels_UMAP.pdf", width = 6, height = 4)
+```
+
+```{r}
+VlnPlot(object = dt, features = "ENSG00000143799", split.by = "disease")
+```
+
+
+```{r}
+VlnPlot(object = dt, features = "ENSG00000163738", split.by = "disease")
+```
+
+### Exploratory analyses and QC 
+
+Run this part in the cluster because too Long
+
+Transformed data will be available in the SCT assay, which is set as the default after running sctransform
+
+Formal class 'Seurat' [package "SeuratObject"] with 13 slots
+  ..@ assays      :List of 1
+  .. ..$ RNA:Formal class 'Assay' [package "SeuratObject"] with 8 slots
+  .. .. .. ..@ counts       : num[0 , 0 ] 
+  .. .. .. ..@ data
+  
+  
+
+dt@assays$RNA@counts = dt@assays$RNA@data
+dt@assays$RNA@data = new(Class = "matrix")
+dt <- SCTransform(dt)
+dt=RunPCA(dt, verbose = FALSE)
+dt=RunUMAP(dt, dims = 1:30, verbose = FALSE)
+dt <- FindNeighbors(dt, dims = 1:30, verbose = FALSE)
+dt <- FindClusters(dt, verbose = FALSE)
+saveRDS(dt, "norm_dt.rds")
+
+
+Then, make a dataframe with the collowing columns: patientID, celltype, age, SCT_PARP1 
+```{r}
+# Visualize QC metrics as a violin plot
+VlnPlot(dt, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3)
+```
+
+
+```{r}
+DimPlot(dt, reduction = "umap", group.by = "SORT")
+```
+
+```{r}
+DimPlot(dt, reduction = "umap", group.by = "Amyloid")
+```
+
+```{r}
+DimPlot(dt, reduction = "umap", group.by = "Cell.Types")
+```
+
+```{r}
+DimPlot(dt, reduction = "umap", group.by = "disease")
+```
+
+
+## PARP1 levels
+
+```{r} 
+PARP1_dt = data.frame(cellID = dt@assays$RNA@data@Dimnames[2],
+                        mt = dt@meta.data$percent.mt,
+                        age = as.numeric(as.character(dt@meta.data$Age)),
+                        type = dt@meta.data$Cell.Types,
+                        braak = dt@meta.data$Braak,
+                        disease = dt@meta.data$disease,
+                      sex = dt@meta.data$sex,
+                      ethnicity = dt@meta.data$self_reported_ethnicity,
+                      patientID = dt@meta.data$donor_id,
+                      sort = dt@meta.data$SORT,
+                      PARP1 = GetAssayData(object = dt, slot = "data")["ENSG00000143799",])
+PARP1_dt$logPARP1 = log2(PARP1_dt$PARP1)
+write.csv(PARP1_dt, "dt_out/PARP1_dt_subset.csv", row.names = F)
+```
+
+```{r}
+PARP1_dt_finite = subset(PARP1_dt, PARP1 != 0)
+ggplot(PARP1_dt_finite, aes(x=(PARP1))) + geom_histogram()
+```
+
+```{r}
+ggplot(PARP1_dt, aes(x=log2(PARP1))) + geom_histogram()
+```
+
+Data needs to be logged 
+
+Initial model
+```{r}
+# ensure that the reference variable is "control patients" 
+PARP1_dt_finite <- within(PARP1_dt_finite, disease <- relevel(disease, ref = 2))
+PARP1_lm_simplified = lm(data = PARP1_dt_finite, formula = logPARP1 ~ disease + as.numeric(age) + sort +sex)
+summary(PARP1_lm_simplified)
+```
+
+(Intercept)               0.354729   0.035003   10.13   <2e-16 ***
+diseaseAlzheimer disease  0.469339   0.009243   50.78   <2e-16 ***
+as.numeric(age)          -0.009765   0.000475  -20.56   <2e-16 ***
+sexmale                  -0.012811   0.008596   -1.49    0.136    
+
+Note: lmerTest uses the stringent Satterthwaite approximation, which is based on SAS proc mixed theory.
+
+```{r}
+library(lmerTest)
+PARP1_lm_simplified_lmer = lmer(data = PARP1_dt_finite, formula = logPARP1 ~ disease + as.numeric(age) + sex+sort+ (1 | patientID), REML = F)
+summary(PARP1_lm_simplified_lmer)
+
+```
+
+                          Estimate Std. Error        df t value Pr(>|t|)  
+(Intercept)               0.159887   0.540421 16.010590   0.296   0.7711  
+diseaseAlzheimer disease  0.396011   0.140749 16.006228   2.814   0.0125 *
+as.numeric(age)          -0.006067   0.007132 16.014924  -0.851   0.4075  
+sexmale                   0.051760   0.142128 16.001549   0.364   0.7205  
+
+```{r}
+yy_plt_forest_lm = function(lm_model){
+  coef_mat = as.data.frame(summary(lm_model)$coefficients)
+  coef_mat = na.omit(coef_mat)
+  conf = na.omit(confint.default(lm_model, level = 0.95))
+  coef_mat$lci = conf[,1]
+  coef_mat$uci = conf[,2]
+  coef_mat$label = row.names(coef_mat)
+  coef_mat = subset(coef_mat, label != "(Intercept)")
+  ggplot(data=coef_mat, aes(x=reorder(label,Estimate),y=Estimate, fill = `Pr(>|t|)` < 0.05, color = `Pr(>|t|)` < 0.05)) +
+    geom_hline(yintercept=0, lty=2) +  
+    geom_errorbar(aes(ymin=lci, ymax=uci),
+                  width=0,                    # Width of the error bars
+                  position=position_dodge(.9), color = "grey", size = 1.5) +
+    geom_point(shape=21, size = 2.5)+
+    #geom_pointrange(aes(fill = `Pr(>|t|)` < 0.05)) +
+    coord_flip() +  # flip coordinates (puts labels on y axis)
+    xlab("") + ylab("Effect (95% CI)") +
+    scale_fill_manual(values = c("#ED2024", "#939598"))+
+    scale_color_manual(values = c("#ED2024", "#939598"))+
+    theme_classic()+
+    theme(axis.text.x=element_text(colour="black"),
+          axis.text.y=element_text(colour="black"))
+}
+yy_plt_forest_lm(PARP1_lm_simplified)
+ggsave("fig/PARP1_single_cell_expression.pdf", width = 5, height = 2)
+```
+
+
+Add more covariates
+```{r}
+PARP1_lm = lm(data = PARP1_dt_finite, formula = logPARP1 ~ disease + as.numeric(age) + mt + type + braak + sex + ethnicity)
+summary(PARP1_lm)
+yy_plt_forest_lm(PARP1_lm)
+ggsave("fig/PARP1_single_cell_expression_full_model.pdf", width = 5, height = 3)
+```
+
+```{r}
+PARP1_lm_full_lmer = lmer(data = PARP1_dt_finite, formula = logPARP1 ~ disease + as.numeric(age) + mt + type + braak + sex + ethnicity+ (1 | patientID), REML = F)
+summary(PARP1_lm_full_lmer)
+```
+
+Check the reverse
+```{r}
+AD_PARP1_glm_simplified = glm(data = PARP1_dt_finite, formula = disease ~ logPARP1 + as.numeric(age) + sex + ethnicity, family = "binomial")
+summary(AD_PARP1_glm_simplified)
+```
+
+```{r}
+AD_PARP1_glm = glm(data = PARP1_dt_finite, formula = disease ~ logPARP1 + as.numeric(age) + sex + ethnicity + mt + type, family = "binomial")
+summary(AD_PARP1_glm)
+```
+
+diseaseAlzheimer disease             0.2822209  0.0147432  19.142  < 2e-16 ***
+as.numeric(age)                     -0.0048049  0.0013197  -3.641 0.000273 ***
+
+```{r}
+ggplot(PARP1_dt_finite, aes(x=as.numeric(age), y=logPARP1, color=disease, fill = disease)) +
+  geom_point(position = position_jitter(seed = 1, width = 0.2),
+             alpha = 0.5)+
+  geom_smooth(method = "lm")+
+  scale_fill_manual(values=c("#ED2024", "#939598"))+
+  scale_color_manual(values=c("#ED2024", "#939598"))+
+  theme_classic()
+```
+
+```{r}
+data_summary <- function(x) {
+   m <- mean(x)
+   ymin <- m-sd(x)
+   ymax <- m+sd(x)
+   return(c(y=m,ymin=ymin,ymax=ymax))
+}
+
+ggplot(PARP1_dt_finite, aes(x=disease, y=logPARP1, color=disease)) +
+    geom_violin(trim = F) + 
+  #geom_point(position = position_jitter(seed = 1, width = 0.2), alpha = 0.5)+
+  stat_summary(fun.data=data_summary)+
+  scale_fill_manual(values=c("#ED2024", "#939598"))+
+  scale_color_manual(values=c("#ED2024", "#939598"))+
+  theme_classic()
+ggsave("fig/PARP1_expression_violin.pdf", width = 4, height = 3)
+```
+
+Add cell numbers
+
+```{r}
+summary(PARP1_dt_finite)
+```
+normal           :10390
+Alzheimer disease: 8013
+
+
+
