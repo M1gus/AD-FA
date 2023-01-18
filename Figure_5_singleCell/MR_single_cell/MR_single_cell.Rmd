@@ -1,0 +1,31 @@
+---
+title: "Analysis of MTHFD2L mRNA levels in scRNA seq"
+author: "Yizhou Yu"
+date: 'updated: <i>`r format(Sys.Date(),''%b-%d-%Y'')`</i></h4>'
+output:
+  pdf_document: default
+  word_document: default
+  html_document:
+    df_print: paged
+    keep_md: yes
+---
+
+
+```{r}
+library(TwoSampleMR)
+library(ggplot2)
+dat = read.csv("dt/extracted_harmonized_data_MTHFDL2nPARP1.csv")
+mr_results=read.csv("dt/MTHFDL2nPARP1_scbrainMR_0.05eQTLs.csv")
+
+plt = mr_scatter_plot(mr_results, dat)
+```
+
+```{r}
+plt$Excitatory.neurons.4_MTHFD2L_ENSG00000163738.ADGWAS + theme_classic()
+ggsave("fig/mr_scatter_plot_excitatoryNeurons.pdf", width = 9, height = 4)
+```
+
+```{r}
+plt$Inhibitory.neurons.4_MTHFD2L_ENSG00000163738.ADGWAS + theme_classic()
+ggsave("fig/mr_scatter_plot_inhibitoryNeurons.pdf", width = 9, height = 4)
+```
