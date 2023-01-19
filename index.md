@@ -18,7 +18,7 @@ This folder contains the raw data data from Drosophila Activity Monitors (DAM2) 
 
 ### Figures 4 and 7 - UK Biobank analysis of MTHFD2L SNPs and folate intake in AD patients and controls
 
-This folder contains only the analysis scripts. Please contack the UK Biobank ([link](www.ukbiobank.ac.uk)) to obtain data access. We are happy to transfer the processed data upon approval from the UK Biobank.
+This folder contains only the analysis scripts. Please contack the UK Biobank ([link](https://www.ukbiobank.ac.uk/)) to obtain data access. We are happy to transfer the processed data upon approval from the UK Biobank.
 
 - Link: [UKB MTHFD2L](https://github.com/M1gus/AD-FA/blob/main/Figures_4n7_UKB/AD_FA_UKB.Rmd)
 
