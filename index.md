@@ -2,8 +2,6 @@
 
 Authors: Yizhou Yu, Ivana Celardo, Civia Z. Chen, Stephan Kamrad, Bryan Wei Zhi Tan, Rui Guan, Sonja Blasche, Nuno Santos Leal, Rebeka Popovic, Kiran R. Patil, Samantha H. Y. Loh, and L. Miguel Martins
 
-## Supplemental data
-
 Supplemental Table I: 
 
 ## Index of analyses
@@ -11,6 +9,10 @@ Supplemental Table I:
 ### Figure 1 - Proteomic analysis of Abeta-Arc-expressing flies compared to controls
 
 This folder contains the processed proteomics data and the scripts for the subsequent analyses.
+
+### Supplemental Table 1 - Full list of proteins with detected in Abeta-Arc-expressing flies and controls
+
+Supplememtal Table 1
 
 - Link: [Abeta proteomics](https://github.com/M1gus/AD-FA/tree/main/Figure_1_Abeta_proteomics)
 
