@@ -1,13 +1,13 @@
-# Repository for the manuscript "Mitochondrial folate one-carbon metabolism moderates Alzheimer’s disease pathology"
-
-Authors: Yizhou Yu, Ivana Celardo, Civia Z. Chen, Bryan Wei Zhi Tan, Nuno Santos Leal, Rebeka Popovic, Samantha H. Y. Loh, and L. Miguel Martins
-
+# Supplemental Data
+## "Mitochondrial folate one-carbon metabolism moderates Alzheimer’s disease pathology"
+Yizhou Yu, Ivana Celardo, Civia Z. Chen, Bryan Wei Zhi Tan, Nuno Santos Leal, Rebeka Popovic, Samantha H. Y. Loh, and L. Miguel Martins
+University of Cambridge
 
 ## Index of analyses
 
 ### Figure 1 - Proteomic analysis of Abeta-Arc-expressing flies compared to controls
 
-This folder contains the processed proteomics data and the scripts for the subsequent analyses.
+This folder contains the processed proteomics data and the scripts used for the subsequent analyses.
 
 - Link: [Abeta proteomics](https://github.com/M1gus/AD-FA/tree/main/Figure_1_Abeta_proteomics)
 
