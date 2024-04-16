@@ -3,8 +3,6 @@
 Yizhou Yu, Ivana Celardo, Civia Z. Chen, Bryan Wei Zhi Tan, Nuno Santos Leal, Rebeka Popovic, Samantha H. Y. Loh, and L. Miguel Martins
 University of Cambridge
 
-## Index of analyses
-
 ### Figure 1 - Proteomic analysis of Abeta-Arc-expressing flies compared to controls
 
 This folder contains the processed proteomics data and the scripts used for the subsequent analyses.
