@@ -2,7 +2,6 @@
 
 Authors: Yizhou Yu, Ivana Celardo, Civia Z. Chen, Bryan Wei Zhi Tan, Nuno Santos Leal, Rebeka Popovic, Samantha H. Y. Loh, and L. Miguel Martins
 
-Supplemental Table I: 
 
 ## Index of analyses
 
@@ -10,11 +9,12 @@ Supplemental Table I:
 
 This folder contains the processed proteomics data and the scripts for the subsequent analyses.
 
+- Link: [Abeta proteomics](https://github.com/M1gus/AD-FA/tree/main/Figure_1_Abeta_proteomics)
+
 ### Supplemental Table 1 - Full list of proteins with detected in Abeta-Arc-expressing flies and controls
 
-Supplememtal Table 1
+- Link: [Abeta proteomics]([https://github.com/M1gus/AD-FA/tree/main/Figure_1_Abeta_proteomics](https://github.com/M1gus/AD-FA/blob/main/Figure_1_Abeta_proteomics/data/P239%20Ivana%20Celardo%20TMT%20experiment3.csv)
 
-- Link: [Abeta proteomics](https://github.com/M1gus/AD-FA/tree/main/Figure_1_Abeta_proteomics)
 
 ### Figure 3 - High-throughput analysis of sleep and lifespan in Abeta-expressing flies
 
