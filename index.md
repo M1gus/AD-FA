@@ -13,7 +13,7 @@ This folder contains the processed proteomics data and the scripts for the subse
 
 ### Supplemental Table 1 - Full list of proteins with detected in Abeta-Arc-expressing flies and controls
 
-- Link: [Abeta proteomics]([https://github.com/M1gus/AD-FA/tree/main/Figure_1_Abeta_proteomics](https://github.com/M1gus/AD-FA/blob/main/Figure_1_Abeta_proteomics/data/P239%20Ivana%20Celardo%20TMT%20experiment3.csv)
+- Link: [Abeta proteomics](https://github.com/M1gus/AD-FA/blob/main/Figure_1_Abeta_proteomics/data/P239%20Ivana%20Celardo%20TMT%20experiment3.csv)
 
 
 ### Figure 3 - High-throughput analysis of sleep and lifespan in Abeta-expressing flies
