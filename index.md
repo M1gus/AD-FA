@@ -1,6 +1,6 @@
 # Repository for the manuscript "Mitochondrial folate one-carbon metabolism moderates Alzheimer’s disease pathology"
 
-Authors: Yizhou Yu, Ivana Celardo, Civia Z. Chen, Stephan Kamrad, Bryan Wei Zhi Tan, Rui Guan, Sonja Blasche, Nuno Santos Leal, Rebeka Popovic, Kiran R. Patil, Samantha H. Y. Loh, and L. Miguel Martins
+Authors: Yizhou Yu, Ivana Celardo, Civia Z. Chen, Bryan Wei Zhi Tan, Nuno Santos Leal, Rebeka Popovic, Samantha H. Y. Loh, and L. Miguel Martins
 
 Supplemental Table I: 
 
