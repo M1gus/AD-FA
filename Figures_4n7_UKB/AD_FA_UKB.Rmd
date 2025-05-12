@@ -1,6 +1,6 @@
 ---
 title: "Yu et al. 2022"
-author: "Yizhou Yu, MRC Toxicology Unit, University of Cambridge, (yzy21 at mrc-tox.cam.ac.uk)"
+author: "Yizhou Yu, University of Cambridge, (yzy21 at cam.ac.uk)"
 date: "June 2022"
 output: rmarkdown::github_document
 ---
